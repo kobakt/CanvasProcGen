@@ -48,7 +48,7 @@ function makeHexColor(hexCode) {
 
 function randomColor() {
   const getRandom = () => Math.round(Math.random() * 255);
-  return makeColor([getRandom(), getRandom(), getRandom()]);
+  return makeColor(getRandom(), getRandom(), getRandom());
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -152,7 +152,7 @@ function nextDistanceColor(color, minD) {
   newColorArr.push(getVal(colorArr[2],
     Math.max(curDist, Math.floor(Math.random() * maxDistArr[2]))));
 
-  return makeHexColor(newColorArr);
+  return makeColor(...newColorArr);
 }
 
 function drawDistanceAcc(n, color, minD, centerX, centerY, length, d) {
@@ -164,8 +164,6 @@ function drawDistanceAcc(n, color, minD, centerX, centerY, length, d) {
   const newColor = nextDistanceColor(color, minD);
   drawDistanceAcc(n - 1, newColor, minD, centerX, centerY, length - d, d);
 }
-
-// minD is manhattan color distance
 
 function drawDistance(n, startColor, minD, centerX, centerY, length) {
   let color = startColor;
@@ -265,11 +263,11 @@ function drawProc(centerX, centerY, length, h, minColorDist, minSideSize,
 
 //----------------------------------------------------
 
-[canvas.width, canvas.height] = [1024, 1024];
+// [canvas.width, canvas.height] = [1024, 1024];
 // drawOpposites(5, makeHexColor('#000000'), makeHexColor('#550000'),
 //   150, 150, 300);
 // drawBlend(10, makeHexColor('#FF0000'), makeHexColor('#005500'), 450, 150, 300);
-drawDistance(10, null, 255 * 1, 150, 450, 300);
+// drawDistance(10, null, 255 * 1, 150, 450, 300);
 
 // [canvas.width, canvas.height] = [1024, 512];
 // drawProc(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height,
