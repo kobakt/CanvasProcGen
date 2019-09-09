@@ -301,7 +301,6 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
 
   if (actions.length === 0) {
     // eslint-disable-next-line no-alert
-    alert(`${length} ${height} ${options.minSideSize * 2}`);
     alert('No valid actions.');
     throw Error('No valid actions.');
   }
