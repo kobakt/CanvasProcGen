@@ -40,6 +40,7 @@ function makeColor(r, g, b) {
   };
 }
 
+// eslint-disable-next-line no-unused-vars
 function makeHexColor(hexCode) {
   return makeColor(parseInt(hexCode.substr(1, 2), 16),
     parseInt(hexCode.substr(3, 2), 16),
@@ -63,6 +64,45 @@ function manhattanColorDistance(color1, color2) {
   const colorArr1 = color1.arr();
   const colorArr2 = color2.arr();
   return colorArr1.reduce((prev, cur, i) => prev + Math.hypot(cur - colorArr2[i]), 0);
+}
+
+function nextDistanceColor(color, minD) {
+  const colorArr = color.arr();
+  const maxDistArr = colorArr.map(v => Math.max(v, 255 - v));
+  const maxDist = maxDistArr.reduce((prev, cur) => prev + cur, 0);
+  const difDist = Math.min(maxDist, minD);
+  let curDist = difDist;
+
+  function getVal(initVal, diff) {
+    if (initVal + diff <= 255 && initVal - diff > 0) {
+      if (Math.random() < 0.5) {
+        return initVal + diff;
+      }
+      return initVal - diff;
+    } if (initVal + diff <= 255) {
+      return initVal + diff;
+    }
+    return initVal - diff;
+  }
+
+  const newColorArr = [];
+
+  let minVal1 = curDist - (maxDistArr[1] + maxDistArr[2]);
+  if (minVal1 < 0) { minVal1 = 0; }
+  const randVal1 = minVal1 + Math.floor((maxDistArr[0] - minVal1) * Math.random());
+  curDist -= randVal1;
+  newColorArr.push(getVal(colorArr[0], randVal1));
+
+  let minVal2 = curDist - (maxDistArr[2]);
+  if (minVal2 < 0) { minVal2 = 0; }
+  const randVal2 = minVal2 + Math.floor((maxDistArr[1] - minVal2) * Math.random());
+  curDist -= randVal2;
+  newColorArr.push(getVal(colorArr[1], randVal2));
+
+  newColorArr.push(getVal(colorArr[2],
+    Math.max(curDist, Math.floor(Math.random() * maxDistArr[2]))));
+
+  return makeColor(...newColorArr);
 }
 
 //-----------------------------------------------------
@@ -108,52 +148,13 @@ function drawBlend(numberOfBands, color1, color2, centerX, centerY, length) {
   const colors = getBlendColors(numberOfBands, color1, color2);
   colors.forEach((color, i) => {
     ctx.fillStyle = color.hex();
-    const localLength = length - i * 2 * Math.round(length / (2 * numberOfBands));
-    ctx.fillRect(Math.floor(centerX - localLength / 2), Math.floor(centerY - localLength / 2),
-      Math.ceil(localLength), Math.round(localLength));
+    const curLength = length - i * 2 * Math.round(length / (2 * numberOfBands));
+    ctx.fillRect(Math.floor(centerX - curLength / 2), Math.floor(centerY - curLength / 2),
+      Math.ceil(curLength), Math.round(curLength));
   });
 }
 
 //----------------------------------------------------
-
-function nextDistanceColor(color, minD) {
-  const colorArr = color.arr();
-  const maxDistArr = colorArr.map(v => Math.max(v, 255 - v));
-  const maxDist = maxDistArr.reduce((prev, cur) => prev + cur, 0);
-  const difDist = Math.min(maxDist, minD);
-  let curDist = difDist;
-
-  function getVal(initVal, diff) {
-    if (initVal + diff <= 255 && initVal - diff > 0) {
-      if (Math.random() < 0.5) {
-        return initVal + diff;
-      }
-      return initVal - diff;
-    } if (initVal + diff <= 255) {
-      return initVal + diff;
-    }
-    return initVal - diff;
-  }
-
-  const newColorArr = [];
-
-  let minVal1 = curDist - (maxDistArr[1] + maxDistArr[2]);
-  if (minVal1 < 0) { minVal1 = 0; }
-  const randVal1 = minVal1 + Math.floor((maxDistArr[0] - minVal1) * Math.random());
-  curDist -= randVal1;
-  newColorArr.push(getVal(colorArr[0], randVal1));
-
-  let minVal2 = curDist - (maxDistArr[2]);
-  if (minVal2 < 0) { minVal2 = 0; }
-  const randVal2 = minVal2 + Math.floor((maxDistArr[1] - minVal2) * Math.random());
-  curDist -= randVal2;
-  newColorArr.push(getVal(colorArr[1], randVal2));
-
-  newColorArr.push(getVal(colorArr[2],
-    Math.max(curDist, Math.floor(Math.random() * maxDistArr[2]))));
-
-  return makeColor(...newColorArr);
-}
 
 function drawDistanceAcc(n, color, minD, centerX, centerY, length, d) {
   if (n <= 0) {
@@ -177,88 +178,143 @@ function drawDistance(n, startColor, minD, centerX, centerY, length) {
 
 //----------------------------------------------------
 
-function drawProcAcc(n, color, xCoord, yCoord, length, height, minColorDist, minSideSize,
-  minIndentIter, minSquareIter, minDrawLength, maxDrawLength) {
-  function splitLength(localColor, centerX, centerY, localLength, h) {
-    drawProcAcc(n + 1, localColor, centerX - localLength / 4, centerY, localLength / 2, h,
-      minColorDist, minSideSize, minIndentIter, minSquareIter, minDrawLength, maxDrawLength);
-    drawProcAcc(n + 1, nextDistanceColor(localColor, minColorDist),
-      centerX + localLength / 4, centerY, localLength / 2, h,
-      minColorDist, minSideSize, minIndentIter, minSquareIter, minDrawLength, maxDrawLength);
+function allFactors(n) {
+  const factors = [];
+  const curN = n;
+  // const sqrt = Math.sqrt(n);
+  for (let i = 2; i <= n / 2; i += 1) {
+    if (curN % i === 0) {
+      factors.push(i);
+    }
+  }
+  return factors;
+}
+
+// eslint-disable-next-line no-unused-vars
+function primeFactors(n) {
+  const factors = [];
+  let curN = n;
+  // const sqrt = Math.sqrt(n);
+  for (let i = 2; i <= n / 2; i += 1) {
+    if (curN % i === 0) {
+      while (curN % i === 0) {
+        curN /= i;
+      }
+      factors.push(i);
+    }
+  }
+  return factors;
+}
+
+function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
+  length, height, lastSplits, options) {
+  const nextColor = nextDistanceColor(color, options.minColorDist);
+
+  const MAX_SPLIT_AMOUNT = 5;
+  function splitFactors(sideLength) {
+    return allFactors(sideLength).filter(factor => (sideLength / factor) % 1 === 0
+      && sideLength / factor >= options.minSideSize && factor <= MAX_SPLIT_AMOUNT);
   }
 
-  function splitHeight(localColor, centerX, centerY, localLength, h) {
-    drawProcAcc(n + 1, localColor, centerX, centerY - h / 4, localLength, h / 2,
-      minColorDist, minSideSize, minIndentIter, minSquareIter, minDrawLength, maxDrawLength);
-    drawProcAcc(n + 1, nextDistanceColor(localColor, minColorDist),
-      centerX, centerY + h / 4, localLength, h / 2,
-      minColorDist, minSideSize, minIndentIter, minSquareIter, minDrawLength, maxDrawLength);
+  function splitFunction(factors, byLength) {
+    return (centerX, centerY) => {
+      const numOfSplits = factors[Math.floor(factors.length * Math.random())];
+      const offsetCenter = byLength ? centerX : centerY;
+      const offsetSideLength = byLength ? length : height;
+      const offset = offsetSideLength / numOfSplits;
+      const offsetStart = offsetCenter - offsetSideLength / 2 + offset / 2;
+      for (let i = 0; i < numOfSplits; i += 1) {
+        const newCenter = offsetStart + offset * i;
+        drawProcAcc(numberOfIterations + numOfSplits - 1, nextColor,
+          byLength ? newCenter : centerX,
+          byLength ? centerY : newCenter,
+          byLength ? length / numOfSplits : length, byLength ? height : height / numOfSplits,
+          { splitLength: byLength, splitHeight: !byLength }, options);
+      }
+    };
   }
 
-  function draw(localColor, centerX, centerY, localLength, h) {
-    ctx.fillStyle = localColor.hex();
-    ctx.fillRect(centerX - localLength / 2, centerY - h / 2,
-      localLength, h, minColorDist, minSideSize);
+  function draw(centerX, centerY) {
+    ctx.fillStyle = nextColor.hex();
+    ctx.fillRect(centerX - length / 2, centerY - height / 2,
+      length, height, options.minColorDist, options.minSideSize);
   }
 
-  function indent(localColor, centerX, centerY, localLength, h) {
-    ctx.fillStyle = localColor.hex();
-    ctx.fillRect(centerX - localLength / 2, centerY - h / 2, localLength, h);
-    const newColor = nextDistanceColor(localColor, minColorDist);
-    drawProcAcc(n + 1, newColor, centerX, centerY,
-      localLength - 2 * minSideSize, h - 2 * minSideSize,
-      minColorDist, minSideSize, minIndentIter, minSquareIter, minDrawLength, maxDrawLength);
+  function indent(centerX, centerY) {
+    ctx.fillStyle = nextColor.hex();
+    ctx.fillRect(centerX - length / 2, centerY - height / 2, length, height);
+    const newColor = nextDistanceColor(nextColor, options.minColorDist);
+    drawProcAcc(numberOfIterations + 1, newColor, centerX, centerY,
+      length - 2 * options.minSideSize, height - 2 * options.minSideSize,
+      lastSplits, options);
   }
 
   const actions = [];
 
-  if (length <= minSideSize * 2
-    && height <= minSideSize * 2) {
+  if (length < options.minSideSize * 2
+    && height < options.minSideSize * 2) {
     actions.push(draw);
   }
-  if (length >= minDrawLength
-    && length <= maxDrawLength
-    && height >= minDrawLength
-    && height <= maxDrawLength) {
+  if (length >= options.minDrawLength
+    && length <= options.maxDrawLength
+    && height >= options.minDrawLength
+    && height <= options.maxDrawLength) {
     actions.push(draw);
   }
   // can't be split in two or indented
   if ((length % 2 === 1 || height % 2 === 1)
-    && (length <= minSideSize * 3 || height <= minSideSize * 3)) {
+    && (length < options.minSideSize * 3 || height < options.minSideSize * 3)) {
     actions.push(draw);
   }
-  if (length >= minSideSize * 2 && length % 2 === 0) {
-    actions.push(splitLength);
+
+  const lengthFactors = splitFactors(length);
+  const heightFactors = splitFactors(height);
+  if ((!lastSplits.splitLength || heightFactors.length === 0)
+    && lengthFactors.length > 0) {
+    actions.push(splitFunction(lengthFactors, true));
   }
-  if (height >= minSideSize * 2 && height % 2 === 0) {
-    actions.push(splitHeight);
+  if ((!lastSplits.splitHeight || lengthFactors.length === 0)
+    && heightFactors.length > 0) {
+    actions.push(splitFunction(heightFactors, false));
   }
-  if (n >= minIndentIter && length >= minSideSize * 3 && height >= minSideSize * 3) {
+
+  if (numberOfIterations >= options.minIndentIter
+    && length >= options.minSideSize * 3 && height >= options.minSideSize * 3) {
     actions.push(indent);
   }
-  if (n >= minSquareIter && length === height
-    && length >= minSideSize * 3 && height >= minSideSize * 3) {
-    // actions.push((localColor, centerX, centerY, localLength) => {
-    //   drawOpposites(Math.round(localLength / (minSideSize * 2)), localColor,
-    //     nextDistanceColor(localColor, minColorDist), centerX, centerY, localLength);
-    // });
-    // actions.push((localColor, centerX, centerY, localLength) => {
-    //   drawBlend(Math.round(localLength / (minSideSize * 2)), localColor,
-    //     nextDistanceColor(localColor, minColorDist), centerX, centerY, localLength);
-    // });
-    // actions.push((localColor, centerX, centerY, localLength) => {
-    //   drawDistance(Math.round(localLength / (minSideSize * 2)),
-    //     localColor, minColorDist, centerX, centerY, localLength);
-    // });
+
+  if (numberOfIterations >= options.minSquareIter && length === height
+    && length >= options.minSideSize * 3 && height >= options.minSideSize * 3) {
+    actions.push((centerX, centerY) => {
+      drawOpposites(Math.round(length / (options.minSideSize * 2)), nextColor,
+        nextDistanceColor(nextColor, options.minColorDist), centerX, centerY, length);
+    });
+    actions.push((centerX, centerY) => {
+      drawBlend(Math.round(length / (options.minSideSize * 2)), nextColor,
+        nextDistanceColor(nextColor, options.minColorDist), centerX, centerY, length);
+    });
+    actions.push((centerX, centerY) => {
+      drawDistance(Math.round(length / (options.minSideSize * 2)),
+        nextColor, options.minColorDist, centerX, centerY, length);
+    });
   }
 
-  actions[Math.floor(Math.random() * actions.length)](color, xCoord, yCoord, length, height);
+  if (actions.length === 0) {
+    // eslint-disable-next-line no-alert
+    alert(`${length} ${height} ${options.minSideSize * 2}`);
+    alert('No valid actions.');
+    throw Error('No valid actions.');
+  }
+  actions[Math.floor(Math.random() * actions.length)](xCoord, yCoord, length, height);
 }
 
-function drawProc(centerX, centerY, length, h, minColorDist, minSideSize,
+function drawProc(centerX, centerY, length, height, minColorDist, minSideSize,
   minIndentIter = 5, minSquareIter = 5, minDrawLength = 0, maxDrawLength = 100) {
-  drawProcAcc(0, nextDistanceColor(randomColor(), minColorDist), centerX, centerY, length, h,
-    minColorDist, minSideSize, minIndentIter, minSquareIter, minDrawLength, maxDrawLength);
+  drawProcAcc(0, nextDistanceColor(randomColor(), minColorDist), centerX, centerY, length, height,
+    { splitLength: false, splitHeight: false },
+    {
+      minColorDist, minSideSize, minIndentIter, minSquareIter, minDrawLength, maxDrawLength,
+    });
 }
 
 //----------------------------------------------------
@@ -274,11 +330,24 @@ function drawProc(centerX, centerY, length, h, minColorDist, minSideSize,
 //   255 * 1.0, 5, 5, 6,
 //   0 * Math.max(canvas.width, canvas.height),
 //   0.1 * Math.max(canvas.width, canvas.height));
+// [canvas.width, canvas.height] = [1200, 600];
+// drawProc(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height,
+//   255 * 1.0, 5, 5, 6,
+//   0 * Math.max(canvas.width, canvas.height),
+//   0.1 * Math.max(canvas.width, canvas.height));
+
+// Wallpaper
 // [canvas.width, canvas.height] = [1920, 1080];
 // drawProc(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height,
 //   255 * 1.0, 10, 4, 5,
 //   0 * Math.max(canvas.width, canvas.height),
 //   0.1 * Math.max(canvas.width, canvas.height));
+// Wallpaper in half testing
+[canvas.width, canvas.height] = [1920 / 2, 1080 / 2];
+drawProc(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height,
+  255 * 1.0, 5, 4, 5,
+  0 * Math.max(canvas.width, canvas.height),
+  0.1 * Math.max(canvas.width, canvas.height));
 
-const imgURL = canvas.toDataURL();
-document.getElementById('cimg').src = imgURL;
+// IDEA split based on ratio
+// IDEA max color distance
