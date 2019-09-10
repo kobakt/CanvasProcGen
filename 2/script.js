@@ -210,10 +210,9 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
   length, height, lastSplits, options) {
   const nextColor = nextDistanceColor(color, options.minColorDist);
 
-  const MAX_SPLIT_AMOUNT = 5;
   function splitFactors(sideLength) {
     return allFactors(sideLength).filter(factor => (sideLength / factor) % 1 === 0
-      && sideLength / factor >= options.minSideSize && factor <= MAX_SPLIT_AMOUNT);
+      && sideLength / factor >= options.minSideSize && factor <= options.maxSplitAmount);
   }
 
   function splitFunction(factors, byLength) {
@@ -307,17 +306,37 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
   actions[Math.floor(Math.random() * actions.length)](xCoord, yCoord, length, height);
 }
 
-function drawProc(centerX, centerY, length, height, minColorDist, minSideSize,
-  minIndentIter = 5, minSquareIter = 5, minDrawLength = 0, maxDrawLength = 100) {
+function drawProc(centerX, centerY, length, height,
+  minColorDist = 255, maxColorDist = 255 * 3, minSideSize = 1,
+  minIndentIter = 5, minSquareIter = 5,
+  minDrawLength = 0, maxDrawLength = 100,
+  maxSplitAmount = 5) {
   drawProcAcc(0, nextDistanceColor(randomColor(), minColorDist), centerX, centerY, length, height,
     { splitLength: false, splitHeight: false },
     {
-      minColorDist, minSideSize, minIndentIter, minSquareIter, minDrawLength, maxDrawLength,
+      minColorDist,
+      maxColorDist,
+      minSideSize,
+      minIndentIter,
+      minSquareIter,
+      minDrawLength,
+      maxDrawLength,
+      maxSplitAmount,
     });
+}
+
+function drawProcCanvasFill(minColorDist = 255, maxColorDist = 255 * 3, minSideSize = 1,
+  minIndentIter = 5, minSquareIter = 5,
+  minDrawLength = 0, maxDrawLength = 100,
+  maxSplitAmount = 5) {
+  drawProc(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height,
+    minColorDist, maxColorDist, minSideSize,
+    minIndentIter, minSquareIter, minDrawLength, maxDrawLength, maxSplitAmount);
 }
 
 //----------------------------------------------------
 
+// Square Tests
 // [canvas.width, canvas.height] = [1024, 1024];
 // drawOpposites(5, makeHexColor('#000000'), makeHexColor('#550000'),
 //   150, 150, 300);
@@ -325,28 +344,22 @@ function drawProc(centerX, centerY, length, height, minColorDist, minSideSize,
 // drawDistance(10, null, 255 * 1, 150, 450, 300);
 
 // [canvas.width, canvas.height] = [1024, 512];
-// drawProc(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height,
-//   255 * 1.0, 5, 5, 6,
-//   0 * Math.max(canvas.width, canvas.height),
-//   0.1 * Math.max(canvas.width, canvas.height));
-// [canvas.width, canvas.height] = [1200, 600];
-// drawProc(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height,
-//   255 * 1.0, 5, 5, 6,
-//   0 * Math.max(canvas.width, canvas.height),
-//   0.1 * Math.max(canvas.width, canvas.height));
+[canvas.width, canvas.height] = [1200, 600];
+drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
+  /* minSideSize */ 5, /* minIdentIter */ 5, /* minSquareIter */ 6,
+  /* minDrawLength */ 0 * Math.max(canvas.width, canvas.height),
+  /* maxDrawLength */ 0.1 * Math.max(canvas.width, canvas.height),
+  /* maxSplitAmount */ 5);
 
 // Wallpaper
 // [canvas.width, canvas.height] = [1920, 1080];
-// drawProc(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height,
-//   255 * 1.0, 10, 4, 5,
-//   0 * Math.max(canvas.width, canvas.height),
-//   0.1 * Math.max(canvas.width, canvas.height));
 // Wallpaper in half testing
-[canvas.width, canvas.height] = [1920 / 2, 1080 / 2];
-drawProc(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height,
-  255 * 1.0, 5, 4, 5,
-  0 * Math.max(canvas.width, canvas.height),
-  0.1 * Math.max(canvas.width, canvas.height));
+// [canvas.width, canvas.height] = [1920 / 2, 1080 / 2];
+// drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
+//   /* minSideSize */ canvas.width / 192, /* minIdentIter */ 4, /* minSquareIter */ 5,
+//   /* minDrawLength */ 0 * Math.max(canvas.width, canvas.height),
+//   /* maxDrawLength */ 0.1 * Math.max(canvas.width, canvas.height)
+//   /* maxSplitAmount */ 5);
 
 // IDEA split based on ratio
 // IDEA max color distance
