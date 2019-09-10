@@ -12,7 +12,7 @@ function makeHexCode(r, g, b) {
     if (cur < 0) {
       value = '00';
       // eslint-disable-next-line no-alert
-      alert('Color value negative.');
+      alert(`Color value negative.${r} ${g} ${b}`);
     } else if (cur < 15.5) {
       value = `0${(Math.round(cur)).toString(16)}`;
     } else if (cur <= 255) {
@@ -66,12 +66,13 @@ function manhattanColorDistance(color1, color2) {
   return colorArr1.reduce((prev, cur, i) => prev + Math.hypot(cur - colorArr2[i]), 0);
 }
 
-function nextDistanceColor(color, minD) {
+function nextDistanceColor(color, minD, maxD) {
   const colorArr = color.arr();
   const maxDistArr = colorArr.map(v => Math.max(v, 255 - v));
   const maxDist = maxDistArr.reduce((prev, cur) => prev + cur, 0);
   const difDist = Math.min(maxDist, minD);
   let curDist = difDist;
+  let curMaxDist = maxD;
 
   function getVal(initVal, diff) {
     if (initVal + diff <= 255 && initVal - diff > 0) {
@@ -89,21 +90,63 @@ function nextDistanceColor(color, minD) {
 
   let minVal1 = curDist - (maxDistArr[1] + maxDistArr[2]);
   if (minVal1 < 0) { minVal1 = 0; }
-  const randVal1 = minVal1 + Math.floor((maxDistArr[0] - minVal1) * Math.random());
+  const randVal1 = minVal1
+    + Math.floor(Math.min((maxDistArr[0] - minVal1), maxD) * Math.random());
   curDist -= randVal1;
+  curMaxDist -= randVal1;
   newColorArr.push(getVal(colorArr[0], randVal1));
 
   let minVal2 = curDist - (maxDistArr[2]);
   if (minVal2 < 0) { minVal2 = 0; }
-  const randVal2 = minVal2 + Math.floor((maxDistArr[1] - minVal2) * Math.random());
+  const randVal2 = minVal2
+    + Math.floor(Math.min((maxDistArr[1] - minVal2), maxD) * Math.random());
   curDist -= randVal2;
+  curMaxDist -= randVal2;
   newColorArr.push(getVal(colorArr[1], randVal2));
 
   newColorArr.push(getVal(colorArr[2],
-    Math.max(curDist, Math.floor(Math.random() * maxDistArr[2]))));
+    Math.min(Math.max(curDist, Math.floor(maxDistArr[2] * Math.random())))), curMaxDist);
 
   return makeColor(...newColorArr);
 }
+// function nextDistanceColor(color, minD, maxD) {
+//   const colorArr = color.arr();
+//   const maxDistArr = colorArr.map(v => Math.max(v, 255 - v));
+//   const maxDist = maxDistArr.reduce((prev, cur) => prev + cur, 0);
+//   const difDist = Math.min(maxDist, minD);
+//   let curDist = difDist;
+
+//   function getVal(initVal, diff) {
+//     if (initVal + diff <= 255 && initVal - diff > 0) {
+//       if (Math.random() < 0.5) {
+//         return initVal + diff;
+//       }
+//       return initVal - diff;
+//     } if (initVal + diff <= 255) {
+//       return initVal + diff;
+//     }
+//     return initVal - diff;
+//   }
+
+//   const newColorArr = [];
+
+//   let minVal1 = curDist - (maxDistArr[1] + maxDistArr[2]);
+//   if (minVal1 < 0) { minVal1 = 0; }
+//   const randVal1 = minVal1 + Math.floor((maxDistArr[0] - minVal1) * Math.random());
+//   curDist -= randVal1;
+//   newColorArr.push(getVal(colorArr[0], randVal1));
+
+//   let minVal2 = curDist - (maxDistArr[2]);
+//   if (minVal2 < 0) { minVal2 = 0; }
+//   const randVal2 = minVal2 + Math.floor((maxDistArr[1] - minVal2) * Math.random());
+//   curDist -= randVal2;
+//   newColorArr.push(getVal(colorArr[1], randVal2));
+
+//   newColorArr.push(getVal(colorArr[2],
+//     Math.max(curDist, Math.floor(Math.random() * maxDistArr[2]))));
+
+//   return makeColor(...newColorArr);
+// }
 
 //-----------------------------------------------------
 
@@ -156,24 +199,27 @@ function drawBlend(numberOfBands, color1, color2, centerX, centerY, length) {
 
 //----------------------------------------------------
 
-function drawDistanceAcc(n, color, minD, centerX, centerY, length, d) {
+function drawDistanceAcc(n, color, minD, maxD, centerX, centerY, length, d) {
   if (n <= 0) {
     return;
   }
   ctx.fillStyle = color.hex();
   ctx.fillRect(Math.round(centerX - length / 2), Math.round(centerY - length / 2), length, length);
-  const newColor = nextDistanceColor(color, minD);
-  drawDistanceAcc(n - 1, newColor, minD, centerX, centerY, length - d, d);
+  const newColor = nextDistanceColor(color, minD, maxD);
+  drawDistanceAcc(n - 1, newColor, minD, maxD, centerX, centerY, length - d, d);
 }
 
-function drawDistance(n, startColor, minD, centerX, centerY, length) {
+function drawDistance(n, startColor, minD, maxD, centerX, centerY, length) {
   let color = startColor;
   if (startColor === null) {
     color = randomColor();
   }
   let minimumD = minD;
   if (minD < 0) { minimumD = 0; }
-  drawDistanceAcc(n, color, minimumD, centerX, centerY, length, 2 * Math.round(length / (2 * n)));
+  let maximumD = maxD;
+  if (maxD < 0) { maximumD = 0; }
+  drawDistanceAcc(n, color, minimumD, maximumD, centerX, centerY,
+    length, 2 * Math.round(length / (2 * n)));
 }
 
 //----------------------------------------------------
@@ -208,7 +254,7 @@ function primeFactors(n) {
 
 function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
   length, height, lastSplits, options) {
-  const nextColor = nextDistanceColor(color, options.minColorDist);
+  const nextColor = nextDistanceColor(color, options.minColorDist, options.maxColorDist);
 
   function splitFactors(sideLength) {
     return allFactors(sideLength).filter(factor => (sideLength / factor) % 1 === 0
@@ -230,7 +276,7 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
           byLength ? centerY : newCenter,
           byLength ? length / numOfSplits : length, byLength ? height : height / numOfSplits,
           { splitLength: byLength, splitHeight: !byLength }, options);
-        curColor = nextDistanceColor(curColor, options.minColorDist);
+        curColor = nextDistanceColor(curColor, options.minColorDist, options.maxColorDist);
       }
     };
   }
@@ -295,7 +341,7 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
     });
     actions.push((centerX, centerY) => {
       drawDistance(Math.round(length / (options.minSideSize * 2)),
-        color, options.minColorDist, centerX, centerY, length);
+        color, options.minColorDist, options.maxColorDist, centerX, centerY, length);
     });
   }
 
@@ -312,7 +358,8 @@ function drawProc(centerX, centerY, length, height,
   minIndentIter = 5, minSquareIter = 5,
   minDrawLength = 0, maxDrawLength = 100,
   maxSplitAmount = 5) {
-  drawProcAcc(0, nextDistanceColor(randomColor(), minColorDist), centerX, centerY, length, height,
+  drawProcAcc(0, nextDistanceColor(randomColor(), minColorDist, maxColorDist),
+    centerX, centerY, length, height,
     { splitLength: false, splitHeight: false },
     {
       minColorDist,
@@ -342,25 +389,24 @@ function drawProcCanvasFill(minColorDist = 255, maxColorDist = 255 * 3, minSideS
 // drawOpposites(5, makeHexColor('#000000'), makeHexColor('#550000'),
 //   150, 150, 300);
 // drawBlend(10, makeHexColor('#FF0000'), makeHexColor('#005500'), 450, 150, 300);
-// drawDistance(10, null, 255 * 1, 150, 450, 300);
+// drawDistance(10, null, 255 * 1, 255 * 3, 150, 450, 300);
 
 // [canvas.width, canvas.height] = [1024, 512];
-[canvas.width, canvas.height] = [1200, 600];
-drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
-  /* minSideSize */ 5, /* minIdentIter */ 5, /* minSquareIter */ 6,
-  /* minDrawLength */ 0 * Math.max(canvas.width, canvas.height),
-  /* maxDrawLength */ 0.1 * Math.max(canvas.width, canvas.height),
-  /* maxSplitAmount */ 5);
+// [canvas.width, canvas.height] = [1200, 600];
+// drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
+//   /* minSideSize */ 5, /* minIdentIter */ 5, /* minSquareIter */ 6,
+//   /* minDrawLength */ 0 * Math.max(canvas.width, canvas.height),
+//   /* maxDrawLength */ 0.1 * Math.max(canvas.width, canvas.height),
+//   /* maxSplitAmount */ 5);
 
 // Wallpaper
 // [canvas.width, canvas.height] = [1920, 1080];
 // Wallpaper in half testing
-// [canvas.width, canvas.height] = [1920 / 2, 1080 / 2];
-// drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
-//   /* minSideSize */ canvas.width / 192, /* minIdentIter */ 4, /* minSquareIter */ 5,
-//   /* minDrawLength */ 0 * Math.max(canvas.width, canvas.height),
-//   /* maxDrawLength */ 0.1 * Math.max(canvas.width, canvas.height)
-//   /* maxSplitAmount */ 5);
+[canvas.width, canvas.height] = [1920 / 2, 1080 / 2];
+drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
+  /* minSideSize */ canvas.width / 192, /* minIdentIter */ 4, /* minSquareIter */ 5,
+  /* minDrawLength */ 0 * Math.max(canvas.width, canvas.height),
+  /* maxDrawLength */ 0.1 * Math.max(canvas.width, canvas.height),
+  /* maxSplitAmount */ 5);
 
 // IDEA split based on ratio
-// IDEA max color distance
