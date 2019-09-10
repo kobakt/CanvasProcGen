@@ -295,6 +295,57 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
     }
   }
 
+  // fixme divisible by 6
+  function cross(centerX, centerY) {
+    draw(centerX, centerY);
+    const newLength = length - 2 * options.minSideSize;
+    const halfLength = newLength / 2;
+    const offset = newLength / 6;
+
+    ctx.fillStyle = nextColor.hex();
+    ctx.fillRect(centerX - halfLength, centerY - halfLength,
+      newLength, newLength, options.minColorDist, options.minSideSize);
+    ctx.fillStyle = color.hex();
+
+    // upper
+    ctx.beginPath();
+    ctx.moveTo(centerX - offset - 1, centerY - halfLength - 1);
+    ctx.lineTo(centerX + offset + 1, centerY - halfLength - 1);
+    ctx.lineTo(centerX, centerY - (halfLength - offset));
+    ctx.fill();
+
+    // lower
+    ctx.beginPath();
+    ctx.moveTo(centerX - offset - 1, centerY + halfLength + 1);
+    ctx.lineTo(centerX + offset + 1, centerY + halfLength + 1);
+    ctx.lineTo(centerX, centerY + (halfLength - offset));
+    ctx.fill();
+
+    // left
+    ctx.beginPath();
+    ctx.moveTo(centerX - halfLength - 1, centerY - offset - 1);
+    ctx.lineTo(centerX - halfLength - 1, centerY + offset + 1);
+    ctx.lineTo(centerX - (halfLength - offset), centerY);
+    ctx.fill();
+
+    // right
+    ctx.beginPath();
+    ctx.moveTo(centerX + halfLength + 1, centerY - offset - 1);
+    ctx.lineTo(centerX + halfLength + 1, centerY + offset + 1);
+    ctx.lineTo(centerX + (halfLength - offset), centerY);
+    ctx.fill();
+
+
+    const nestedLength = ((halfLength - Math.ceil(offset)) - options.minSideSize) * 2;
+    if (nestedLength >= options.minSideSize && Math.random() > 0.5) {
+      drawProcAcc(numberOfIterations + 1,
+        nextDistanceColor(nextColor, options.minColorDist, options.maxColorDist),
+        centerX, centerY,
+        nestedLength, nestedLength,
+        lastSplits, options);
+    }
+  }
+
   const actions = [];
 
   if (length < options.minSideSize * 2
@@ -355,6 +406,12 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
   if (/* FIXME */ numberOfIterations >= MIN_DIAMOND_ITER && length === height
     && length >= options.minSideSize * 4) {
     actions.push(diamond);
+  }
+
+  const MIN_CROSS_ITER = 3; // FIXME
+  if (/* FIXME */ numberOfIterations >= MIN_CROSS_ITER && length === height
+    && length >= options.minSideSize * 6) {
+    actions.push(cross);
   }
 
   if (actions.length === 0) {
