@@ -223,6 +223,9 @@ function defaultSettings() {
     minColorDist: 256 * 1 - 1,
     maxColorDist: 256 * 3 - 1,
     minSideSize: 3,
+    minDrawLengthRatio: 0,
+    maxDrawLengthRatio: 0.1,
+    maxSplitAmount: 5,
     minIterations: {
       minIndentIter: 4,
       minOppositesSquareIter: 5,
@@ -232,9 +235,6 @@ function defaultSettings() {
       minDiamondIter: 5,
       miCrossIter: 5,
     },
-    minDrawLengthRatio: 0,
-    maxDrawLengthRatio: 0.1,
-    maxSplitAmount: 5,
     rectWeights: {
       draw: 1,
       indent: 1,
@@ -261,13 +261,16 @@ function defaultSettings() {
 
 //----------------------------------------------------
 
-function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
-  length, height, lastSplits, specialShapePlaceable, options) {
-  const nextColor = nextDistanceColor(color, options.minColorDist, options.maxColorDist);
+function drawAcc(numOfIter, color, centerXCoord, centerYCoord, length, height,
+  lastSplits, specialShapePlaceable, settings) {
+  alert('drawAcc begin');
+  alert(settings.minColorDist);
+  const nextColor = nextDistanceColor(color, settings.minColorDist, settings.maxColorDist);
+  alert('drawAcc after newColor');
 
   function splitFactors(sideLength) {
     return allFactors(sideLength).filter(factor => (sideLength / factor) % 1 === 0
-      && sideLength / factor >= options.minSideSize && factor <= options.maxSplitAmount);
+      && sideLength / factor >= settings.minSideSize && factor <= settings.maxSplitAmount);
   }
 
   function splitFunction(factors, byLength) {
@@ -280,28 +283,28 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
       let curColor = color;
       for (let i = 0; i < numOfSplits; i += 1) {
         const newCenter = offsetStart + offset * i;
-        drawProcAcc(numberOfIterations + numOfSplits - 1, curColor,
+        drawAcc(numOfIter + numOfSplits - 1, curColor,
           byLength ? newCenter : centerX,
           byLength ? centerY : newCenter,
           byLength ? length / numOfSplits : length, byLength ? height : height / numOfSplits,
-          { splitLength: byLength, splitHeight: !byLength }, false, options);
-        curColor = nextDistanceColor(curColor, options.minColorDist, options.maxColorDist);
+          { splitLength: byLength, splitHeight: !byLength }, false, settings);
+        curColor = nextDistanceColor(curColor, settings.minColorDist, settings.maxColorDist);
       }
     };
   }
 
-  function draw(centerX, centerY) {
+  function drawRect(centerX, centerY) {
     ctx.fillStyle = color.hex();
     ctx.fillRect(centerX - length / 2, centerY - height / 2,
-      length, height, options.minColorDist, options.minSideSize);
+      length, height, settings.minColorDist, settings.minSideSize);
   }
 
   function indent(centerX, centerY) {
     ctx.fillStyle = color.hex();
     ctx.fillRect(centerX - length / 2, centerY - height / 2, length, height);
-    drawProcAcc(numberOfIterations + 1, nextColor, centerX, centerY,
-      length - 2 * options.minSideSize, height - 2 * options.minSideSize,
-      lastSplits, true, options);
+    drawAcc(numOfIter + 1, nextColor, centerX, centerY,
+      length - 2 * settings.minSideSize, height - 2 * settings.minSideSize,
+      lastSplits, true, settings);
   }
 
   function circle(centerX, centerY) {
@@ -310,13 +313,13 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
     const radius = length / 2;
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
     ctx.fill();
-    const newLength = 2 * Math.ceil((radius - options.minSideSize * 2) / Math.SQRT2);
-    if (newLength >= options.minSideSize && Math.random() > 0.5) {
-      drawProcAcc(numberOfIterations + 1,
-        nextDistanceColor(nextColor, options.minColorDist, options.maxColorDist),
+    const newLength = 2 * Math.ceil((radius - settings.minSideSize * 2) / Math.SQRT2);
+    if (newLength >= settings.minSideSize && Math.random() > 0.5) {
+      drawAcc(numOfIter + 1,
+        nextDistanceColor(nextColor, settings.minColorDist, settings.maxColorDist),
         centerX, centerY,
         newLength, newLength,
-        lastSplits, true, options);
+        lastSplits, true, settings);
     }
   }
 
@@ -330,12 +333,12 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
     ctx.lineTo(centerX, centerY + offset);
     ctx.fill();
     const newLength = 2 * Math.floor(offset / 3);
-    if (newLength >= options.minSideSize && Math.random() > 0.5) {
-      drawProcAcc(numberOfIterations + 1,
-        nextDistanceColor(nextColor, options.minColorDist, options.maxColorDist),
+    if (newLength >= settings.minSideSize && Math.random() > 0.5) {
+      drawAcc(numOfIter + 1,
+        nextDistanceColor(nextColor, settings.minColorDist, settings.maxColorDist),
         centerX, centerY,
         newLength, newLength,
-        lastSplits, true, options);
+        lastSplits, true, settings);
     }
   }
 
@@ -371,32 +374,32 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
     ctx.lineTo(centerX - halfLength, centerY - offset);
     ctx.fill();
 
-    const nestedLength = ((halfLength - Math.ceil(offset)) - options.minSideSize) * 2;
-    if (nestedLength >= options.minSideSize && Math.random() > 0.5) {
-      drawProcAcc(numberOfIterations + 1,
-        nextDistanceColor(nextColor, options.minColorDist, options.maxColorDist),
+    const nestedLength = ((halfLength - Math.ceil(offset)) - settings.minSideSize) * 2;
+    if (nestedLength >= settings.minSideSize && Math.random() > 0.5) {
+      drawAcc(numOfIter + 1,
+        nextDistanceColor(nextColor, settings.minColorDist, settings.maxColorDist),
         centerX, centerY,
         nestedLength, nestedLength,
-        lastSplits, true, options);
+        lastSplits, true, settings);
     }
   }
 
   const actions = [];
 
-  if (length < options.minSideSize * 2
-    && height < options.minSideSize * 2) {
-    actions.push(draw);
+  if (length < settings.minSideSize * 2
+    && height < settings.minSideSize * 2) {
+    actions.push(drawRect);
   }
-  if (length >= options.minDrawLength
-    && length <= options.maxDrawLength
-    && height >= options.minDrawLength
-    && height <= options.maxDrawLength) {
-    actions.push(draw);
+  if (length >= settings.minDrawLength
+    && length <= settings.maxDrawLength
+    && height >= settings.minDrawLength
+    && height <= settings.maxDrawLength) {
+    actions.push(drawRect);
   }
   // can't be split in two or indented
   if ((length % 2 === 1 || height % 2 === 1)
-    && (length < options.minSideSize * 3 || height < options.minSideSize * 3)) {
-    actions.push(draw);
+    && (length < settings.minSideSize * 3 || height < settings.minSideSize * 3)) {
+    actions.push(drawRect);
   }
 
   const lengthFactors = splitFactors(length);
@@ -410,86 +413,300 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
     actions.push(splitFunction(heightFactors, false));
   }
 
-  if (numberOfIterations >= options.minIndentIter
-    && length >= options.minSideSize * 3 && height >= options.minSideSize * 3) {
-    actions.push(indent);
-  }
+  // if (numOfIter >= settings.minIterations.minIndentIter
+  //   && length >= settings.minSideSize * 3 && height >= settings.minSideSize * 3) {
+  //   actions.push(indent);
+  // }
 
-  if (numberOfIterations >= options.minSquareIter && length === height
-    && length >= options.minSideSize * 3) {
-    actions.push((centerX, centerY) => {
-      drawOpposites(Math.round(length / (options.minSideSize * 2)), color,
-        nextColor, centerX, centerY, length);
-    });
-    actions.push((centerX, centerY) => {
-      drawBlend(Math.round(length / (options.minSideSize * 2)), color,
-        nextColor, centerX, centerY, length);
-    });
-    actions.push((centerX, centerY) => {
-      drawDistance(Math.round(length / (options.minSideSize * 2)),
-        color, options.minColorDist, options.maxColorDist, centerX, centerY, length);
-    });
-  }
+  // if (numOfIter >= settings.minIterations.minSquareIter && length === height
+  //   && length >= settings.minSideSize * 3) {
+  //   actions.push((centerX, centerY) => {
+  //     drawOpposites(Math.round(length / (settings.minSideSize * 2)), color,
+  //       nextColor, centerX, centerY, length);
+  //   });
+  //   actions.push((centerX, centerY) => {
+  //     drawBlend(Math.round(length / (settings.minSideSize * 2)), color,
+  //       nextColor, centerX, centerY, length);
+  //   });
+  //   actions.push((centerX, centerY) => {
+  //     drawDistance(Math.round(length / (settings.minSideSize * 2)),
+  //       color, settings.minColorDist, settings.maxColorDist, centerX, centerY, length);
+  //   });
+  // }
 
 
-  const MIN_CIRCLE_ITER = 1; // FIXME
-  if (specialShapePlaceable && /* FIXME */ numberOfIterations >= MIN_CIRCLE_ITER
-    && length === height
-    && length >= options.minSideSize * 3) {
-    actions.push(circle);
-  }
+  // const MIN_CIRCLE_ITER = 1; // FIXME
+  // if (specialShapePlaceable && /* FIXME */ numOfIter >= MIN_CIRCLE_ITER
+  //   && length === height
+  //   && length >= settings.minSideSize * 3) {
+  //   actions.push(circle);
+  // }
 
-  const MIN_DIAMOND_ITER = 1; // FIXME
-  if (specialShapePlaceable && /* FIXME */ numberOfIterations >= MIN_DIAMOND_ITER
-    && length === height
-    && length >= options.minSideSize * 3) {
-    actions.push(diamond);
-  }
+  // const MIN_DIAMOND_ITER = 1; // FIXME
+  // if (specialShapePlaceable && /* FIXME */ numOfIter >= MIN_DIAMOND_ITER
+  //   && length === height
+  //   && length >= settings.minSideSize * 3) {
+  //   actions.push(diamond);
+  // }
 
-  const MIN_CROSS_ITER = 1; // FIXME
-  if (specialShapePlaceable && /* FIXME */ numberOfIterations >= MIN_CROSS_ITER
-    && length === height
-    && length >= options.minSideSize * 4) {
-    actions.push(cross);
-  }
+  // const MIN_CROSS_ITER = 1; // FIXME
+  // if (specialShapePlaceable && /* FIXME */ numOfIter >= MIN_CROSS_ITER
+  //   && length === height
+  //   && length >= settings.minSideSize * 4) {
+  //   actions.push(cross);
+  // }
 
   if (actions.length === 0) {
     // eslint-disable-next-line no-alert
     alert('No valid actions.');
     throw Error('No valid actions.');
   }
-  actions[Math.floor(Math.random() * actions.length)](xCoord, yCoord, length, height);
+  // FIXME with probability
+  actions[Math.floor(Math.random() * actions.length)](centerXCoord, centerYCoord, length, height);
 }
+// function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
+//   length, height, lastSplits, specialShapePlaceable, options) {
+//   const nextColor = nextDistanceColor(color, options.minColorDist, options.maxColorDist);
 
-function drawProc(centerX, centerY, length, height,
-  minColorDist = 255, maxColorDist = 255 * 3, minSideSize = 1,
-  minIndentIter = 5, minSquareIter = 5,
-  minDrawLength = 0, maxDrawLength = 100,
-  maxSplitAmount = 5) {
-  drawProcAcc(0, nextDistanceColor(randomColor(), minColorDist, maxColorDist),
-    centerX, centerY, length, height,
-    { splitLength: false, splitHeight: false },
-    false,
-    {
-      minColorDist,
-      maxColorDist,
-      minSideSize,
-      minIndentIter,
-      minSquareIter,
-      minDrawLength,
-      maxDrawLength,
-      maxSplitAmount,
-    });
-}
+//   function splitFactors(sideLength) {
+//     return allFactors(sideLength).filter(factor => (sideLength / factor) % 1 === 0
+//       && sideLength / factor >= options.minSideSize && factor <= options.maxSplitAmount);
+//   }
 
-function drawProcCanvasFill(minColorDist = 255, maxColorDist = 255 * 3, minSideSize = 1,
-  minIndentIter = 5, minSquareIter = 5,
-  minDrawLength = 0, maxDrawLength = 100,
-  maxSplitAmount = 5) {
-  drawProc(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height,
-    minColorDist, maxColorDist, minSideSize,
-    minIndentIter, minSquareIter, minDrawLength, maxDrawLength, maxSplitAmount);
+//   function splitFunction(factors, byLength) {
+//     return (centerX, centerY) => {
+//       const numOfSplits = factors[Math.floor(factors.length * Math.random())];
+//       const offsetCenter = byLength ? centerX : centerY;
+//       const offsetSideLength = byLength ? length : height;
+//       const offset = offsetSideLength / numOfSplits;
+//       const offsetStart = offsetCenter - offsetSideLength / 2 + offset / 2;
+//       let curColor = color;
+//       for (let i = 0; i < numOfSplits; i += 1) {
+//         const newCenter = offsetStart + offset * i;
+//         drawProcAcc(numberOfIterations + numOfSplits - 1, curColor,
+//           byLength ? newCenter : centerX,
+//           byLength ? centerY : newCenter,
+//           byLength ? length / numOfSplits : length, byLength ? height : height / numOfSplits,
+//           { splitLength: byLength, splitHeight: !byLength }, false, options);
+//         curColor = nextDistanceColor(curColor, options.minColorDist, options.maxColorDist);
+//       }
+//     };
+//   }
+
+//   function draw(centerX, centerY) {
+//     ctx.fillStyle = color.hex();
+//     ctx.fillRect(centerX - length / 2, centerY - height / 2,
+//       length, height, options.minColorDist, options.minSideSize);
+//   }
+
+//   function indent(centerX, centerY) {
+//     ctx.fillStyle = color.hex();
+//     ctx.fillRect(centerX - length / 2, centerY - height / 2, length, height);
+//     drawProcAcc(numberOfIterations + 1, nextColor, centerX, centerY,
+//       length - 2 * options.minSideSize, height - 2 * options.minSideSize,
+//       lastSplits, true, options);
+//   }
+
+//   function circle(centerX, centerY) {
+//     ctx.beginPath();
+//     ctx.fillStyle = nextColor.hex();
+//     const radius = length / 2;
+//     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+//     ctx.fill();
+//     const newLength = 2 * Math.ceil((radius - options.minSideSize * 2) / Math.SQRT2);
+//     if (newLength >= options.minSideSize && Math.random() > 0.5) {
+//       drawProcAcc(numberOfIterations + 1,
+//         nextDistanceColor(nextColor, options.minColorDist, options.maxColorDist),
+//         centerX, centerY,
+//         newLength, newLength,
+//         lastSplits, true, options);
+//     }
+//   }
+
+//   function diamond(centerX, centerY) {
+//     ctx.beginPath();
+//     ctx.fillStyle = nextColor.hex();
+//     const offset = length / 2;
+//     ctx.moveTo(centerX - offset, centerY);
+//     ctx.lineTo(centerX, centerY - offset);
+//     ctx.lineTo(centerX + offset, centerY);
+//     ctx.lineTo(centerX, centerY + offset);
+//     ctx.fill();
+//     const newLength = 2 * Math.floor(offset / 3);
+//     if (newLength >= options.minSideSize && Math.random() > 0.5) {
+//       drawProcAcc(numberOfIterations + 1,
+//         nextDistanceColor(nextColor, options.minColorDist, options.maxColorDist),
+//         centerX, centerY,
+//         newLength, newLength,
+//         lastSplits, true, options);
+//     }
+//   }
+
+//   function cross(centerX, centerY) {
+//     const halfLength = length / 2;
+//     const offset = length / 6;
+
+//     ctx.fillStyle = color.hex();
+//     // Top-Left Corner
+//     ctx.beginPath();
+//     ctx.moveTo(centerX - halfLength, centerY - halfLength);
+//     // upper
+//     ctx.lineTo(centerX - offset, centerY - halfLength);
+//     ctx.lineTo(centerX, centerY - (halfLength - offset));
+//     ctx.lineTo(centerX + offset, centerY - halfLength);
+//     // Top-Right Corner
+//     ctx.lineTo(centerX + halfLength, centerY - halfLength);
+//     // right
+//     ctx.lineTo(centerX + halfLength, centerY - offset);
+//     ctx.lineTo(centerX + (halfLength - offset), centerY);
+//     ctx.lineTo(centerX + halfLength, centerY + offset);
+//     // Bottom-Right Corner
+//     ctx.lineTo(centerX + halfLength, centerY + halfLength);
+//     // lower
+//     ctx.lineTo(centerX + offset, centerY + halfLength);
+//     ctx.lineTo(centerX, centerY + (halfLength - offset));
+//     ctx.lineTo(centerX - offset, centerY + halfLength);
+//     // Bottom-Left Corner
+//     ctx.lineTo(centerX - halfLength, centerY + halfLength);
+//     // left
+//     ctx.lineTo(centerX - halfLength, centerY + offset);
+//     ctx.lineTo(centerX - (halfLength - offset), centerY);
+//     ctx.lineTo(centerX - halfLength, centerY - offset);
+//     ctx.fill();
+
+//     const nestedLength = ((halfLength - Math.ceil(offset)) - options.minSideSize) * 2;
+//     if (nestedLength >= options.minSideSize && Math.random() > 0.5) {
+//       drawProcAcc(numberOfIterations + 1,
+//         nextDistanceColor(nextColor, options.minColorDist, options.maxColorDist),
+//         centerX, centerY,
+//         nestedLength, nestedLength,
+//         lastSplits, true, options);
+//     }
+//   }
+
+//   const actions = [];
+
+//   if (length < options.minSideSize * 2
+//     && height < options.minSideSize * 2) {
+//     actions.push(draw);
+//   }
+//   if (length >= options.minDrawLength
+//     && length <= options.maxDrawLength
+//     && height >= options.minDrawLength
+//     && height <= options.maxDrawLength) {
+//     actions.push(draw);
+//   }
+//   // can't be split in two or indented
+//   if ((length % 2 === 1 || height % 2 === 1)
+//     && (length < options.minSideSize * 3 || height < options.minSideSize * 3)) {
+//     actions.push(draw);
+//   }
+
+//   const lengthFactors = splitFactors(length);
+//   const heightFactors = splitFactors(height);
+//   if ((!lastSplits.splitLength || heightFactors.length === 0)
+//     && lengthFactors.length > 0) {
+//     actions.push(splitFunction(lengthFactors, true));
+//   }
+//   if ((!lastSplits.splitHeight || lengthFactors.length === 0)
+//     && heightFactors.length > 0) {
+//     actions.push(splitFunction(heightFactors, false));
+//   }
+
+//   if (numberOfIterations >= options.minIndentIter
+//     && length >= options.minSideSize * 3 && height >= options.minSideSize * 3) {
+//     actions.push(indent);
+//   }
+
+//   if (numberOfIterations >= options.minSquareIter && length === height
+//     && length >= options.minSideSize * 3) {
+//     actions.push((centerX, centerY) => {
+//       drawOpposites(Math.round(length / (options.minSideSize * 2)), color,
+//         nextColor, centerX, centerY, length);
+//     });
+//     actions.push((centerX, centerY) => {
+//       drawBlend(Math.round(length / (options.minSideSize * 2)), color,
+//         nextColor, centerX, centerY, length);
+//     });
+//     actions.push((centerX, centerY) => {
+//       drawDistance(Math.round(length / (options.minSideSize * 2)),
+//         color, options.minColorDist, options.maxColorDist, centerX, centerY, length);
+//     });
+//   }
+
+
+//   const MIN_CIRCLE_ITER = 1; // FIXME
+//   if (specialShapePlaceable && /* FIXME */ numberOfIterations >= MIN_CIRCLE_ITER
+//     && length === height
+//     && length >= options.minSideSize * 3) {
+//     actions.push(circle);
+//   }
+
+//   const MIN_DIAMOND_ITER = 1; // FIXME
+//   if (specialShapePlaceable && /* FIXME */ numberOfIterations >= MIN_DIAMOND_ITER
+//     && length === height
+//     && length >= options.minSideSize * 3) {
+//     actions.push(diamond);
+//   }
+
+//   const MIN_CROSS_ITER = 1; // FIXME
+//   if (specialShapePlaceable && /* FIXME */ numberOfIterations >= MIN_CROSS_ITER
+//     && length === height
+//     && length >= options.minSideSize * 4) {
+//     actions.push(cross);
+//   }
+
+//   if (actions.length === 0) {
+//     // eslint-disable-next-line no-alert
+//     alert('No valid actions.');
+//     throw Error('No valid actions.');
+//   }
+//   actions[Math.floor(Math.random() * actions.length)](xCoord, yCoord, length, height);
+// }
+
+function draw(settings) {
+  alert('begin');
+  let drawSettings = settings;
+  if (settings === null || settings === undefined) {
+    drawSettings = defaultSettings();
+  }
+  [canvas.width, canvas.height] = [drawSettings.length, drawSettings.height];
+  drawAcc(0, nextDistanceColor(randomColor(), drawSettings.minColorDist, drawSettings.maxColorDist),
+    drawSettings.length / 2, drawSettings.height / 2,
+    drawSettings.length, drawSettings.height,
+    { splitLength: false, splitHeight: false }, false, drawSettings);
+  alert('final');
 }
+// function drawProc(centerX, centerY, length, height,
+//   minColorDist = 255, maxColorDist = 255 * 3, minSideSize = 1,
+//   minIndentIter = 5, minSquareIter = 5,
+//   minDrawLength = 0, maxDrawLength = 100,
+//   maxSplitAmount = 5) {
+//   drawProcAcc(0, nextDistanceColor(randomColor(), minColorDist, maxColorDist),
+//     centerX, centerY, length, height,
+//     { splitLength: false, splitHeight: false },
+//     false,
+//     {
+//       minColorDist,
+//       maxColorDist,
+//       minSideSize,
+//       minIndentIter,
+//       minSquareIter,
+//       minDrawLength,
+//       maxDrawLength,
+//       maxSplitAmount,
+//     });
+// }
+
+// function drawProcCanvasFill(minColorDist = 255, maxColorDist = 255 * 3, minSideSize = 1,
+//   minIndentIter = 5, minSquareIter = 5,
+//   minDrawLength = 0, maxDrawLength = 100,
+//   maxSplitAmount = 5) {
+//   drawProc(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height,
+//     minColorDist, maxColorDist, minSideSize,
+//     minIndentIter, minSquareIter, minDrawLength, maxDrawLength, maxSplitAmount);
+// }
+
 
 //----------------------------------------------------
 
@@ -501,12 +718,12 @@ function drawProcCanvasFill(minColorDist = 255, maxColorDist = 255 * 3, minSideS
 // drawDistance(10, null, 255 * 1, 255 * 3, 150, 450, 300);
 
 // [canvas.width, canvas.height] = [1024, 512];
-[canvas.width, canvas.height] = [1200, 600];
-drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
-  /* minSideSize */ 5, /* minIdentIter */ 5, /* minSquareIter */ 6,
-  /* minDrawLength */ 0 * Math.max(canvas.width, canvas.height),
-  /* maxDrawLength */ 0.1 * Math.max(canvas.width, canvas.height),
-  /* maxSplitAmount */ 5);
+// [canvas.width, canvas.height] = [1200, 600];
+// drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
+//   /* minSideSize */ 5, /* minIdentIter */ 5, /* minSquareIter */ 6,
+//   /* minDrawLength */ 0 * Math.max(canvas.width, canvas.height),
+//   /* maxDrawLength */ 0.1 * Math.max(canvas.width, canvas.height),
+//   /* maxSplitAmount */ 5);
 
 // Wallpaper
 // [canvas.width, canvas.height] = [1920, 1080];
@@ -518,5 +735,8 @@ drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
 //   /* maxDrawLength */ 0.1 * Math.max(canvas.width, canvas.height),
 //   /* maxSplitAmount */ 5);
 
+draw();
+
 // IDEA split based on ratio
 // TODO weight things better and/or custom weighting
+// IDEA set starting color
