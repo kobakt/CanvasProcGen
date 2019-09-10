@@ -265,7 +265,28 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
     ctx.fill();
     const newLength = 2 * Math.ceil((radius - options.minSideSize * 2) / Math.SQRT2);
-    if (newLength >= options.minSideSize) {
+    if (newLength >= options.minSideSize && Math.random() > 0.5) {
+      drawProcAcc(numberOfIterations + 1,
+        nextDistanceColor(nextColor, options.minColorDist, options.maxColorDist),
+        centerX, centerY,
+        newLength, newLength,
+        lastSplits, options);
+    }
+  }
+
+  // FIXME needs to be divisible by 2 or odd maybe
+  function diamond(centerX, centerY) {
+    draw(centerX, centerY);
+    ctx.beginPath();
+    ctx.fillStyle = nextColor.hex();
+    const offset = (length - options.minSideSize * 2) / 2;
+    ctx.moveTo(centerX - offset, centerY);
+    ctx.lineTo(centerX, centerY - offset);
+    ctx.lineTo(centerX + offset, centerY);
+    ctx.lineTo(centerX, centerY + offset);
+    ctx.fill();
+    const newLength = offset * 2 / 3;
+    if (newLength >= options.minSideSize && Math.random() > 0.5) {
       drawProcAcc(numberOfIterations + 1,
         nextDistanceColor(nextColor, options.minColorDist, options.maxColorDist),
         centerX, centerY,
@@ -309,7 +330,7 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
   }
 
   if (numberOfIterations >= options.minSquareIter && length === height
-    && length >= options.minSideSize * 3 && height >= options.minSideSize * 3) {
+    && length >= options.minSideSize * 3) {
     actions.push((centerX, centerY) => {
       drawOpposites(Math.round(length / (options.minSideSize * 2)), color,
         nextColor, centerX, centerY, length);
@@ -324,10 +345,16 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
     });
   }
 
-  const MIN_CIRCLE_ITER = 3;
+  const MIN_CIRCLE_ITER = 3; // FIXME
   if (/* FIXME */ numberOfIterations >= MIN_CIRCLE_ITER && length === height
-    && length >= options.minSideSize * 3 && height >= options.minSideSize * 3) {
+    && length >= options.minSideSize * 4) {
     actions.push(circle);
+  }
+
+  const MIN_DIAMOND_ITER = 3; // FIXME
+  if (/* FIXME */ numberOfIterations >= MIN_DIAMOND_ITER && length === height
+    && length >= options.minSideSize * 4) {
+    actions.push(diamond);
   }
 
   if (actions.length === 0) {
@@ -396,4 +423,3 @@ drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
 
 // IDEA split based on ratio
 // IDEA add crosses
-// IDEA add diamonds
