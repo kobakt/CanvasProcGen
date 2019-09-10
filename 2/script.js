@@ -109,44 +109,6 @@ function nextDistanceColor(color, minD, maxD) {
 
   return makeColor(...newColorArr);
 }
-// function nextDistanceColor(color, minD, maxD) {
-//   const colorArr = color.arr();
-//   const maxDistArr = colorArr.map(v => Math.max(v, 255 - v));
-//   const maxDist = maxDistArr.reduce((prev, cur) => prev + cur, 0);
-//   const difDist = Math.min(maxDist, minD);
-//   let curDist = difDist;
-
-//   function getVal(initVal, diff) {
-//     if (initVal + diff <= 255 && initVal - diff > 0) {
-//       if (Math.random() < 0.5) {
-//         return initVal + diff;
-//       }
-//       return initVal - diff;
-//     } if (initVal + diff <= 255) {
-//       return initVal + diff;
-//     }
-//     return initVal - diff;
-//   }
-
-//   const newColorArr = [];
-
-//   let minVal1 = curDist - (maxDistArr[1] + maxDistArr[2]);
-//   if (minVal1 < 0) { minVal1 = 0; }
-//   const randVal1 = minVal1 + Math.floor((maxDistArr[0] - minVal1) * Math.random());
-//   curDist -= randVal1;
-//   newColorArr.push(getVal(colorArr[0], randVal1));
-
-//   let minVal2 = curDist - (maxDistArr[2]);
-//   if (minVal2 < 0) { minVal2 = 0; }
-//   const randVal2 = minVal2 + Math.floor((maxDistArr[1] - minVal2) * Math.random());
-//   curDist -= randVal2;
-//   newColorArr.push(getVal(colorArr[1], randVal2));
-
-//   newColorArr.push(getVal(colorArr[2],
-//     Math.max(curDist, Math.floor(Math.random() * maxDistArr[2]))));
-
-//   return makeColor(...newColorArr);
-// }
 
 //-----------------------------------------------------
 
