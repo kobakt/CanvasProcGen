@@ -308,21 +308,21 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
     actions.push(indent);
   }
 
-  // if (numberOfIterations >= options.minSquareIter && length === height
-  //   && length >= options.minSideSize * 3 && height >= options.minSideSize * 3) {
-  //   actions.push((centerX, centerY) => {
-  //     drawOpposites(Math.round(length / (options.minSideSize * 2)), color,
-  //       nextColor, centerX, centerY, length);
-  //   });
-  //   actions.push((centerX, centerY) => {
-  //     drawBlend(Math.round(length / (options.minSideSize * 2)), color,
-  //       nextColor, centerX, centerY, length);
-  //   });
-  //   actions.push((centerX, centerY) => {
-  //     drawDistance(Math.round(length / (options.minSideSize * 2)),
-  //       color, options.minColorDist, options.maxColorDist, centerX, centerY, length);
-  //   });
-  // }
+  if (numberOfIterations >= options.minSquareIter && length === height
+    && length >= options.minSideSize * 3 && height >= options.minSideSize * 3) {
+    actions.push((centerX, centerY) => {
+      drawOpposites(Math.round(length / (options.minSideSize * 2)), color,
+        nextColor, centerX, centerY, length);
+    });
+    actions.push((centerX, centerY) => {
+      drawBlend(Math.round(length / (options.minSideSize * 2)), color,
+        nextColor, centerX, centerY, length);
+    });
+    actions.push((centerX, centerY) => {
+      drawDistance(Math.round(length / (options.minSideSize * 2)),
+        color, options.minColorDist, options.maxColorDist, centerX, centerY, length);
+    });
+  }
 
   const MIN_CIRCLE_ITER = 3;
   if (/* FIXME */ numberOfIterations >= MIN_CIRCLE_ITER && length === height
