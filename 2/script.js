@@ -479,4 +479,5 @@ drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
 //   /* maxSplitAmount */ 5);
 
 // IDEA split based on ratio
-// IDEA add crosses
+// IDEA remove background on circle, diamonds, and crosses if inside
+// an indent, circle, diamonds, and crosses
