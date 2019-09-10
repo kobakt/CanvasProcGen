@@ -222,28 +222,29 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
       const offsetSideLength = byLength ? length : height;
       const offset = offsetSideLength / numOfSplits;
       const offsetStart = offsetCenter - offsetSideLength / 2 + offset / 2;
+      let curColor = color;
       for (let i = 0; i < numOfSplits; i += 1) {
         const newCenter = offsetStart + offset * i;
-        drawProcAcc(numberOfIterations + numOfSplits - 1, nextColor,
+        drawProcAcc(numberOfIterations + numOfSplits - 1, curColor,
           byLength ? newCenter : centerX,
           byLength ? centerY : newCenter,
           byLength ? length / numOfSplits : length, byLength ? height : height / numOfSplits,
           { splitLength: byLength, splitHeight: !byLength }, options);
+        curColor = nextDistanceColor(curColor, options.minColorDist);
       }
     };
   }
 
   function draw(centerX, centerY) {
-    ctx.fillStyle = nextColor.hex();
+    ctx.fillStyle = color.hex();
     ctx.fillRect(centerX - length / 2, centerY - height / 2,
       length, height, options.minColorDist, options.minSideSize);
   }
 
   function indent(centerX, centerY) {
-    ctx.fillStyle = nextColor.hex();
+    ctx.fillStyle = color.hex();
     ctx.fillRect(centerX - length / 2, centerY - height / 2, length, height);
-    const newColor = nextDistanceColor(nextColor, options.minColorDist);
-    drawProcAcc(numberOfIterations + 1, newColor, centerX, centerY,
+    drawProcAcc(numberOfIterations + 1, nextColor, centerX, centerY,
       length - 2 * options.minSideSize, height - 2 * options.minSideSize,
       lastSplits, options);
   }
@@ -285,16 +286,16 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
   if (numberOfIterations >= options.minSquareIter && length === height
     && length >= options.minSideSize * 3 && height >= options.minSideSize * 3) {
     actions.push((centerX, centerY) => {
-      drawOpposites(Math.round(length / (options.minSideSize * 2)), nextColor,
-        nextDistanceColor(nextColor, options.minColorDist), centerX, centerY, length);
+      drawOpposites(Math.round(length / (options.minSideSize * 2)), color,
+        nextColor, centerX, centerY, length);
     });
     actions.push((centerX, centerY) => {
-      drawBlend(Math.round(length / (options.minSideSize * 2)), nextColor,
-        nextDistanceColor(nextColor, options.minColorDist), centerX, centerY, length);
+      drawBlend(Math.round(length / (options.minSideSize * 2)), color,
+        nextColor, centerX, centerY, length);
     });
     actions.push((centerX, centerY) => {
       drawDistance(Math.round(length / (options.minSideSize * 2)),
-        nextColor, options.minColorDist, centerX, centerY, length);
+        color, options.minColorDist, centerX, centerY, length);
     });
   }
 
