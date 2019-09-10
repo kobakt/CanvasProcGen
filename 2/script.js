@@ -257,6 +257,23 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
       lastSplits, options);
   }
 
+  function circle(centerX, centerY) {
+    draw(centerX, centerY);
+    ctx.beginPath();
+    ctx.fillStyle = nextColor.hex();
+    const radius = length / 2 - options.minSideSize;
+    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+    ctx.fill();
+    const newLength = 2 * Math.ceil((radius - options.minSideSize * 2) / Math.SQRT2);
+    if (newLength >= options.minSideSize) {
+      drawProcAcc(numberOfIterations + 1,
+        nextDistanceColor(nextColor, options.minColorDist, options.maxColorDist),
+        centerX, centerY,
+        newLength, newLength,
+        lastSplits, options);
+    }
+  }
+
   const actions = [];
 
   if (length < options.minSideSize * 2
@@ -291,20 +308,26 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
     actions.push(indent);
   }
 
-  if (numberOfIterations >= options.minSquareIter && length === height
+  // if (numberOfIterations >= options.minSquareIter && length === height
+  //   && length >= options.minSideSize * 3 && height >= options.minSideSize * 3) {
+  //   actions.push((centerX, centerY) => {
+  //     drawOpposites(Math.round(length / (options.minSideSize * 2)), color,
+  //       nextColor, centerX, centerY, length);
+  //   });
+  //   actions.push((centerX, centerY) => {
+  //     drawBlend(Math.round(length / (options.minSideSize * 2)), color,
+  //       nextColor, centerX, centerY, length);
+  //   });
+  //   actions.push((centerX, centerY) => {
+  //     drawDistance(Math.round(length / (options.minSideSize * 2)),
+  //       color, options.minColorDist, options.maxColorDist, centerX, centerY, length);
+  //   });
+  // }
+
+  const MIN_CIRCLE_ITER = 3;
+  if (/* FIXME */ numberOfIterations >= MIN_CIRCLE_ITER && length === height
     && length >= options.minSideSize * 3 && height >= options.minSideSize * 3) {
-    actions.push((centerX, centerY) => {
-      drawOpposites(Math.round(length / (options.minSideSize * 2)), color,
-        nextColor, centerX, centerY, length);
-    });
-    actions.push((centerX, centerY) => {
-      drawBlend(Math.round(length / (options.minSideSize * 2)), color,
-        nextColor, centerX, centerY, length);
-    });
-    actions.push((centerX, centerY) => {
-      drawDistance(Math.round(length / (options.minSideSize * 2)),
-        color, options.minColorDist, options.maxColorDist, centerX, centerY, length);
-    });
+    actions.push(circle);
   }
 
   if (actions.length === 0) {
@@ -354,23 +377,23 @@ function drawProcCanvasFill(minColorDist = 255, maxColorDist = 255 * 3, minSideS
 // drawDistance(10, null, 255 * 1, 255 * 3, 150, 450, 300);
 
 // [canvas.width, canvas.height] = [1024, 512];
-// [canvas.width, canvas.height] = [1200, 600];
-// drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
-//   /* minSideSize */ 5, /* minIdentIter */ 5, /* minSquareIter */ 6,
-//   /* minDrawLength */ 0 * Math.max(canvas.width, canvas.height),
-//   /* maxDrawLength */ 0.1 * Math.max(canvas.width, canvas.height),
-//   /* maxSplitAmount */ 5);
-
-// Wallpaper
-// [canvas.width, canvas.height] = [1920, 1080];
-// Wallpaper in half testing
-[canvas.width, canvas.height] = [1920 / 2, 1080 / 2];
+[canvas.width, canvas.height] = [1200, 600];
 drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
-  /* minSideSize */ canvas.width / 192, /* minIdentIter */ 4, /* minSquareIter */ 4,
+  /* minSideSize */ 5, /* minIdentIter */ 5, /* minSquareIter */ 6,
   /* minDrawLength */ 0 * Math.max(canvas.width, canvas.height),
   /* maxDrawLength */ 0.1 * Math.max(canvas.width, canvas.height),
   /* maxSplitAmount */ 5);
 
+// Wallpaper
+// [canvas.width, canvas.height] = [1920, 1080];
+// Wallpaper in half testing
+// [canvas.width, canvas.height] = [1920 / 2, 1080 / 2];
+// drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
+//   /* minSideSize */ canvas.width / 192, /* minIdentIter */ 4, /* minSquareIter */ 4,
+//   /* minDrawLength */ 0 * Math.max(canvas.width, canvas.height),
+//   /* maxDrawLength */ 0.1 * Math.max(canvas.width, canvas.height),
+//   /* maxSplitAmount */ 5);
+
 // IDEA split based on ratio
 // IDEA add crosses
-// IDEA add circles
+// IDEA add diamonds
