@@ -215,7 +215,7 @@ function primeFactors(n) {
 }
 
 function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
-  length, height, lastSplits, options) {
+  length, height, lastSplits, specialShapePlaceable, options) {
   const nextColor = nextDistanceColor(color, options.minColorDist, options.maxColorDist);
 
   function splitFactors(sideLength) {
@@ -237,7 +237,7 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
           byLength ? newCenter : centerX,
           byLength ? centerY : newCenter,
           byLength ? length / numOfSplits : length, byLength ? height : height / numOfSplits,
-          { splitLength: byLength, splitHeight: !byLength }, options);
+          { splitLength: byLength, splitHeight: !byLength }, false, options);
         curColor = nextDistanceColor(curColor, options.minColorDist, options.maxColorDist);
       }
     };
@@ -254,14 +254,13 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
     ctx.fillRect(centerX - length / 2, centerY - height / 2, length, height);
     drawProcAcc(numberOfIterations + 1, nextColor, centerX, centerY,
       length - 2 * options.minSideSize, height - 2 * options.minSideSize,
-      lastSplits, options);
+      lastSplits, true, options);
   }
 
   function circle(centerX, centerY) {
-    draw(centerX, centerY);
     ctx.beginPath();
     ctx.fillStyle = nextColor.hex();
-    const radius = length / 2 - options.minSideSize;
+    const radius = length / 2;
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
     ctx.fill();
     const newLength = 2 * Math.ceil((radius - options.minSideSize * 2) / Math.SQRT2);
@@ -270,71 +269,60 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
         nextDistanceColor(nextColor, options.minColorDist, options.maxColorDist),
         centerX, centerY,
         newLength, newLength,
-        lastSplits, options);
+        lastSplits, true, options);
     }
   }
 
-  // FIXME needs to be divisible by 2 or odd maybe
   function diamond(centerX, centerY) {
-    draw(centerX, centerY);
     ctx.beginPath();
     ctx.fillStyle = nextColor.hex();
-    const offset = (length - options.minSideSize * 2) / 2;
+    const offset = length / 2;
     ctx.moveTo(centerX - offset, centerY);
     ctx.lineTo(centerX, centerY - offset);
     ctx.lineTo(centerX + offset, centerY);
     ctx.lineTo(centerX, centerY + offset);
     ctx.fill();
-    const newLength = offset * 2 / 3;
+    const newLength = 2 * Math.floor(offset / 3);
     if (newLength >= options.minSideSize && Math.random() > 0.5) {
       drawProcAcc(numberOfIterations + 1,
         nextDistanceColor(nextColor, options.minColorDist, options.maxColorDist),
         centerX, centerY,
         newLength, newLength,
-        lastSplits, options);
+        lastSplits, true, options);
     }
   }
 
-  // fixme divisible by 6
   function cross(centerX, centerY) {
-    draw(centerX, centerY);
-    const newLength = length - 2 * options.minSideSize;
-    const halfLength = newLength / 2;
-    const offset = newLength / 6;
+    const halfLength = length / 2;
+    const offset = length / 6;
 
-    ctx.fillStyle = nextColor.hex();
-    ctx.fillRect(centerX - halfLength, centerY - halfLength,
-      newLength, newLength, options.minColorDist, options.minSideSize);
     ctx.fillStyle = color.hex();
-
+    // Top-Left Corner
+    ctx.beginPath();
+    ctx.moveTo(centerX - halfLength, centerY - halfLength);
     // upper
-    ctx.beginPath();
-    ctx.moveTo(centerX - offset - 1, centerY - halfLength - 1);
-    ctx.lineTo(centerX + offset + 1, centerY - halfLength - 1);
+    ctx.lineTo(centerX - offset, centerY - halfLength);
     ctx.lineTo(centerX, centerY - (halfLength - offset));
-    ctx.fill();
-
-    // lower
-    ctx.beginPath();
-    ctx.moveTo(centerX - offset - 1, centerY + halfLength + 1);
-    ctx.lineTo(centerX + offset + 1, centerY + halfLength + 1);
-    ctx.lineTo(centerX, centerY + (halfLength - offset));
-    ctx.fill();
-
-    // left
-    ctx.beginPath();
-    ctx.moveTo(centerX - halfLength - 1, centerY - offset - 1);
-    ctx.lineTo(centerX - halfLength - 1, centerY + offset + 1);
-    ctx.lineTo(centerX - (halfLength - offset), centerY);
-    ctx.fill();
-
+    ctx.lineTo(centerX + offset, centerY - halfLength);
+    // Top-Right Corner
+    ctx.lineTo(centerX + halfLength, centerY - halfLength);
     // right
-    ctx.beginPath();
-    ctx.moveTo(centerX + halfLength + 1, centerY - offset - 1);
-    ctx.lineTo(centerX + halfLength + 1, centerY + offset + 1);
+    ctx.lineTo(centerX + halfLength, centerY - offset);
     ctx.lineTo(centerX + (halfLength - offset), centerY);
+    ctx.lineTo(centerX + halfLength, centerY + offset);
+    // Bottom-Right Corner
+    ctx.lineTo(centerX + halfLength, centerY + halfLength);
+    // lower
+    ctx.lineTo(centerX + offset, centerY + halfLength);
+    ctx.lineTo(centerX, centerY + (halfLength - offset));
+    ctx.lineTo(centerX - offset, centerY + halfLength);
+    // Bottom-Left Corner
+    ctx.lineTo(centerX - halfLength, centerY + halfLength);
+    // left
+    ctx.lineTo(centerX - halfLength, centerY + offset);
+    ctx.lineTo(centerX - (halfLength - offset), centerY);
+    ctx.lineTo(centerX - halfLength, centerY - offset);
     ctx.fill();
-
 
     const nestedLength = ((halfLength - Math.ceil(offset)) - options.minSideSize) * 2;
     if (nestedLength >= options.minSideSize && Math.random() > 0.5) {
@@ -342,7 +330,7 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
         nextDistanceColor(nextColor, options.minColorDist, options.maxColorDist),
         centerX, centerY,
         nestedLength, nestedLength,
-        lastSplits, options);
+        lastSplits, true, options);
     }
   }
 
@@ -396,21 +384,25 @@ function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
     });
   }
 
-  const MIN_CIRCLE_ITER = 3; // FIXME
-  if (/* FIXME */ numberOfIterations >= MIN_CIRCLE_ITER && length === height
-    && length >= options.minSideSize * 4) {
+
+  const MIN_CIRCLE_ITER = 1; // FIXME
+  if (specialShapePlaceable && /* FIXME */ numberOfIterations >= MIN_CIRCLE_ITER
+    && length === height
+    && length >= options.minSideSize * 3) {
     actions.push(circle);
   }
 
-  const MIN_DIAMOND_ITER = 3; // FIXME
-  if (/* FIXME */ numberOfIterations >= MIN_DIAMOND_ITER && length === height
-    && length >= options.minSideSize * 4) {
+  const MIN_DIAMOND_ITER = 1; // FIXME
+  if (specialShapePlaceable && /* FIXME */ numberOfIterations >= MIN_DIAMOND_ITER
+    && length === height
+    && length >= options.minSideSize * 3) {
     actions.push(diamond);
   }
 
-  const MIN_CROSS_ITER = 3; // FIXME
-  if (/* FIXME */ numberOfIterations >= MIN_CROSS_ITER && length === height
-    && length >= options.minSideSize * 6) {
+  const MIN_CROSS_ITER = 1; // FIXME
+  if (specialShapePlaceable && /* FIXME */ numberOfIterations >= MIN_CROSS_ITER
+    && length === height
+    && length >= options.minSideSize * 4) {
     actions.push(cross);
   }
 
@@ -430,6 +422,7 @@ function drawProc(centerX, centerY, length, height,
   drawProcAcc(0, nextDistanceColor(randomColor(), minColorDist, maxColorDist),
     centerX, centerY, length, height,
     { splitLength: false, splitHeight: false },
+    false,
     {
       minColorDist,
       maxColorDist,
@@ -479,5 +472,4 @@ drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
 //   /* maxSplitAmount */ 5);
 
 // IDEA split based on ratio
-// IDEA remove background on circle, diamonds, and crosses if inside
-// an indent, circle, diamonds, and crosses
+// TODO weight things better and/or custom weighting
