@@ -214,6 +214,53 @@ function primeFactors(n) {
   return factors;
 }
 
+//----------------------------------------------------
+
+function defaultSettings() {
+  return {
+    length: 1200,
+    height: 600,
+    minColorDist: 256 * 1 - 1,
+    maxColorDist: 256 * 3 - 1,
+    minSideSize: 3,
+    minIterations: {
+      minIndentIter: 4,
+      minOppositesSquareIter: 5,
+      minBlendSquareIter: 5,
+      minDistanceSquareIter: 5,
+      minCircleIter: 5,
+      minDiamondIter: 5,
+      miCrossIter: 5,
+    },
+    minDrawLengthRatio: 0,
+    maxDrawLengthRatio: 0.1,
+    maxSplitAmount: 5,
+    rectWeights: {
+      draw: 1,
+      indent: 1,
+      split: 1,
+    },
+    squareWeights: {
+      draw: 1,
+      indent: 1,
+      split: 1,
+      oppositesSquare: 1,
+      blendSquare: 1,
+      distanceSquare: 1,
+      circle: 1,
+      diamond: 1,
+      cross: 1,
+    },
+    specialNestingProbability: {
+      circle: 0.5,
+      diamond: 0.5,
+      cross: 0.5,
+    },
+  };
+}
+
+//----------------------------------------------------
+
 function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
   length, height, lastSplits, specialShapePlaceable, options) {
   const nextColor = nextDistanceColor(color, options.minColorDist, options.maxColorDist);
