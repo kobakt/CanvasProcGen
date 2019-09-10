@@ -366,7 +366,7 @@ function drawProcCanvasFill(minColorDist = 255, maxColorDist = 255 * 3, minSideS
 // Wallpaper in half testing
 [canvas.width, canvas.height] = [1920 / 2, 1080 / 2];
 drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
-  /* minSideSize */ canvas.width / 192, /* minIdentIter */ 4, /* minSquareIter */ 5,
+  /* minSideSize */ canvas.width / 192, /* minIdentIter */ 4, /* minSquareIter */ 4,
   /* minDrawLength */ 0 * Math.max(canvas.width, canvas.height),
   /* maxDrawLength */ 0.1 * Math.max(canvas.width, canvas.height),
   /* maxSplitAmount */ 5);
