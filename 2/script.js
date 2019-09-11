@@ -66,6 +66,7 @@ function manhattanColorDistance(color1, color2) {
   return colorArr1.reduce((prev, cur, i) => prev + Math.hypot(cur - colorArr2[i]), 0);
 }
 
+// maxD overrides minD
 function nextDistanceColor(color, minD, maxD) {
   function getVal(initVal, diff) {
     if (initVal + diff <= 255 && initVal - diff >= 0) {
@@ -84,24 +85,66 @@ function nextDistanceColor(color, minD, maxD) {
   const maxDist = maxDistArr.reduce((prev, cur) => prev + cur, 0);
 
   const numberOfPoints = Math.min(maxDist, maxD,
-    minD + Math.floor((Math.min(maxDist, maxD) - minD) * Math.random()));
+    minD + Math.round((Math.min(maxDist, maxD) - minD) * Math.random()));
 
   const rWeight = Math.random() * maxDistArr[0];
   const gWeight = Math.random() * maxDistArr[1];
   const bWeight = Math.random() * maxDistArr[2];
   const totalWeight = rWeight + gWeight + bWeight;
-  // FIXME figure out rounding
-  const rPoints = Math.round(numberOfPoints * rWeight / totalWeight);
-  const gPoints = Math.round(numberOfPoints * gWeight / totalWeight);
-  const bPoints = numberOfPoints - rPoints - gPoints; // FIXME test that this is fair
-  // const bPoints = Math.round(numberOfPoints * bWeight / totalWeight);
-  // alert(`${numberOfPoints} ${rPoints + gPoints + bPoints}`);
-  // FIXME Test in for loop
+  const rPoints = Math.min(
+    Math.max(Math.round(numberOfPoints * rWeight / totalWeight),
+      numberOfPoints - maxDistArr[1] - maxDistArr[2]),
+    maxDistArr[0],
+  );
+  const gPoints = Math.min(
+    Math.max(Math.round(numberOfPoints * gWeight / totalWeight),
+      numberOfPoints - rPoints - maxDistArr[2]),
+    maxDistArr[1],
+  );
+  const bPoints = numberOfPoints - rPoints - gPoints;
+
+  // testing
+  // testing nextColorDistance
+  // if (maxDistArr.some((v, i) => v !== [rPoints, gPoints, bPoints][i])) {
+  //   alert(`${colorArr} | ${maxDist} | ${numberOfPoints} | ${maxDistArr} | `
+  //     + `${[rWeight, gWeight, bWeight]} | ${totalWeight} | `
+  //     + `${[rPoints, gPoints, bPoints]} | `
+  //     + `${makeColor(getVal(colorArr[0], rPoints),
+  //       getVal(colorArr[1], gPoints),
+  //       getVal(colorArr[2], bPoints)).arr()}`);
+  // }
 
   return makeColor(getVal(colorArr[0], rPoints),
     getVal(colorArr[1], gPoints),
     getVal(colorArr[2], bPoints));
 }
+
+// testing nextColorDistance
+// const n = 100000000;
+// const [min, max] = [0, 0];
+// // const [min, max] = [100, 100];
+// // const [min, max] = [255 * 3, 255 * 3];
+// // const [min, max] = [0, 100];
+// // const [min, max] = [0, 255 * 3];
+// // const [min, max] = [100, 0];
+// // const [min, max] = [255 * 3, 0];
+// // const [min, max] = [255 * 3, 100];
+// const values = [0, 0, 0];
+// for (let i = 0; i < n; i += 1) {
+//   const color = nextDistanceColor(makeColor(0, 0, 0), min, max);
+//   // const colorTotal = color.arr().reduce((prev, cur) => prev + cur, 0);
+//   // if (colorTotal === min) {
+//   //   alert(`Hit min ${colorTotal}`);
+//   // } else if (colorTotal === max) {
+//   //   alert(`Hit max ${colorTotal}`);
+//   // } else if (colorTotal < min) {
+//   //   alert(`outside min ${colorTotal}`);
+//   // } else if (colorTotal > max) {
+//   //   alert(`outside max ${colorTotal}`);
+//   // }
+//   color.arr().forEach((v, j) => { values[j] += v; });
+// }
+// alert(`average color distances ${values.map(v => v / n)}`);
 
 //-----------------------------------------------------
 
@@ -213,8 +256,8 @@ function defaultSettings() {
   return {
     length: 1200,
     height: 600,
-    minColorDist: 256 * 1 - 1,
-    maxColorDist: 256 * 3 - 1,
+    minColorDist: 255 * 1,
+    maxColorDist: 255 * 3,
     minSideSize: 5,
     // startColor: null,
     drawRatios: {
@@ -608,10 +651,10 @@ const settings = defaultSettings();
 settings.minSideSize = settings.width / 192;
 
 // Settings tests:
-settings.startColor = makeColor(80, 80, 80);
-settings.minColorDist = 50;
+// settings.startColor = makeColor(80, 80, 80);
+settings.minColorDist = 0;
 // settings.maxColorDist = 0;
-settings.maxColorDist = 50;
+settings.maxColorDist = 0;
 
 draw(settings);
 
@@ -620,4 +663,3 @@ draw(settings);
 // TODO weight things better and/or custom weighting
 // IDEA set starting color
 // Idea indented and non-indented circle/diamond
-// BUG min and max colorDistance
