@@ -222,9 +222,14 @@ function defaultSettings() {
     height: 600,
     minColorDist: 256 * 1 - 1,
     maxColorDist: 256 * 3 - 1,
-    minSideSize: 3,
-    minDrawLengthRatio: 0,
-    maxDrawLengthRatio: 0.1,
+    minSideSize: 5, // TEMP
+    // minSideSize: 5,
+    drawRatios: {
+      minLengthRatio: 0,
+      maxLengthRatio: 0.15,
+      minHeightRatio: 0,
+      maxHeightRatio: 0.15,
+    },
     maxSplitAmount: 5,
     minIterations: {
       minIndentIter: 4,
@@ -233,16 +238,16 @@ function defaultSettings() {
       minDistanceSquareIter: 5,
       minCircleIter: 5,
       minDiamondIter: 5,
-      miCrossIter: 5,
+      minCrossIter: 5,
     },
     rectWeights: {
-      draw: 1,
-      indent: 1,
+      drawRect: 1,
+      indentRect: 1,
       split: 1,
     },
     squareWeights: {
-      draw: 1,
-      indent: 1,
+      drawRect: 1,
+      indentRect: 1,
       split: 1,
       oppositesSquare: 1,
       blendSquare: 1,
@@ -263,10 +268,11 @@ function defaultSettings() {
 
 function drawAcc(numOfIter, color, centerXCoord, centerYCoord, length, height,
   lastSplits, specialShapePlaceable, settings) {
-  alert('drawAcc begin');
-  alert(settings.minColorDist);
-  const nextColor = nextDistanceColor(color, settings.minColorDist, settings.maxColorDist);
-  alert('drawAcc after newColor');
+  // alert('drawAcc begin');
+  let curColor = color;
+  let nextColor = nextDistanceColor(curColor, settings.minColorDist, settings.maxColorDist);
+  let drawLength = length;
+  let drawHeight = height;
 
   function splitFactors(sideLength) {
     return allFactors(sideLength).filter(factor => (sideLength / factor) % 1 === 0
@@ -277,44 +283,67 @@ function drawAcc(numOfIter, color, centerXCoord, centerYCoord, length, height,
     return (centerX, centerY) => {
       const numOfSplits = factors[Math.floor(factors.length * Math.random())];
       const offsetCenter = byLength ? centerX : centerY;
-      const offsetSideLength = byLength ? length : height;
+      const offsetSideLength = byLength ? drawLength : drawHeight;
       const offset = offsetSideLength / numOfSplits;
       const offsetStart = offsetCenter - offsetSideLength / 2 + offset / 2;
-      let curColor = color;
+      let iterColor = curColor;
       for (let i = 0; i < numOfSplits; i += 1) {
         const newCenter = offsetStart + offset * i;
-        drawAcc(numOfIter + numOfSplits - 1, curColor,
+        drawAcc(numOfIter + numOfSplits - 1, iterColor,
           byLength ? newCenter : centerX,
           byLength ? centerY : newCenter,
-          byLength ? length / numOfSplits : length, byLength ? height : height / numOfSplits,
+          byLength ? drawLength / numOfSplits : drawLength,
+          byLength ? drawHeight : drawHeight / numOfSplits,
           { splitLength: byLength, splitHeight: !byLength }, false, settings);
-        curColor = nextDistanceColor(curColor, settings.minColorDist, settings.maxColorDist);
+        iterColor = nextDistanceColor(iterColor, settings.minColorDist, settings.maxColorDist);
       }
     };
   }
 
   function drawRect(centerX, centerY) {
-    ctx.fillStyle = color.hex();
-    ctx.fillRect(centerX - length / 2, centerY - height / 2,
-      length, height, settings.minColorDist, settings.minSideSize);
+    ctx.fillStyle = curColor.hex();
+    ctx.fillRect(centerX - drawLength / 2, centerY - drawHeight / 2,
+      drawLength, drawHeight);
   }
 
-  function indent(centerX, centerY) {
-    ctx.fillStyle = color.hex();
-    ctx.fillRect(centerX - length / 2, centerY - height / 2, length, height);
+  function indentRect(centerX, centerY) {
+    ctx.fillStyle = curColor.hex();
+    ctx.fillRect(centerX - drawLength / 2, centerY - drawHeight / 2, drawLength, drawHeight);
     drawAcc(numOfIter + 1, nextColor, centerX, centerY,
-      length - 2 * settings.minSideSize, height - 2 * settings.minSideSize,
+      drawLength - 2 * settings.minSideSize, drawHeight - 2 * settings.minSideSize,
       lastSplits, true, settings);
+  }
+  function indentSpecialFunction(specialFunc) {
+    return (centerX, centerY) => {
+      drawRect(centerX, centerY);
+      drawLength -= 2 * settings.minSideSize;
+      drawHeight -= 2 * settings.minSideSize;
+      curColor = nextColor;
+      nextColor = nextDistanceColor(curColor, settings.minColorDist, settings.maxColorDist);
+      specialFunc(centerX, centerY);
+    };
   }
 
   function circle(centerX, centerY) {
     ctx.beginPath();
     ctx.fillStyle = nextColor.hex();
-    const radius = length / 2;
+    const radius = drawLength / 2;
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
     ctx.fill();
-    const newLength = 2 * Math.ceil((radius - settings.minSideSize * 2) / Math.SQRT2);
-    if (newLength >= settings.minSideSize && Math.random() > 0.5) {
+    // const newLength = (radius);
+    const newLength = (radius - settings.minSideSize);
+    // const newLength = Math.floor((radius - settings.minSideSize) * Math.SQRT2);
+    // if drawLength is odd,
+    //  newLength should be odd
+    //  radius ends in .5
+    // if drawLength is even,
+    //  newLength should be even
+    //  radius ends in .0
+    alert(`circle ${drawLength} ${(radius - settings.minSideSize) * Math.SQRT2} ${newLength}`);
+    // alert(`circle ${drawLength / 2} ${drawLength / 2} ${newLength}`);
+    if (newLength >= settings.minSideSize
+      && true) {
+      // && Math.random() > settings.specialNestingProbability.circle) {
       drawAcc(numOfIter + 1,
         nextDistanceColor(nextColor, settings.minColorDist, settings.maxColorDist),
         centerX, centerY,
@@ -326,14 +355,16 @@ function drawAcc(numOfIter, color, centerXCoord, centerYCoord, length, height,
   function diamond(centerX, centerY) {
     ctx.beginPath();
     ctx.fillStyle = nextColor.hex();
-    const offset = length / 2;
+    const offset = drawLength / 2;
     ctx.moveTo(centerX - offset, centerY);
     ctx.lineTo(centerX, centerY - offset);
     ctx.lineTo(centerX + offset, centerY);
     ctx.lineTo(centerX, centerY + offset);
     ctx.fill();
-    const newLength = 2 * Math.floor(offset / 3);
-    if (newLength >= settings.minSideSize && Math.random() > 0.5) {
+    const newLength = Math.floor(2 * offset / 3) / 2;
+    alert(`diamond ${drawLength / 2} ${drawLength / 2} ${newLength}`);
+    if (newLength >= settings.minSideSize
+      && Math.random() > settings.specialNestingProbability.diamond) {
       drawAcc(numOfIter + 1,
         nextDistanceColor(nextColor, settings.minColorDist, settings.maxColorDist),
         centerX, centerY,
@@ -343,10 +374,10 @@ function drawAcc(numOfIter, color, centerXCoord, centerYCoord, length, height,
   }
 
   function cross(centerX, centerY) {
-    const halfLength = length / 2;
-    const offset = length / 6;
+    const halfLength = drawLength / 2;
+    const offset = drawLength / 6;
 
-    ctx.fillStyle = color.hex();
+    ctx.fillStyle = curColor.hex();
     // Top-Left Corner
     ctx.beginPath();
     ctx.moveTo(centerX - halfLength, centerY - halfLength);
@@ -374,298 +405,182 @@ function drawAcc(numOfIter, color, centerXCoord, centerYCoord, length, height,
     ctx.lineTo(centerX - halfLength, centerY - offset);
     ctx.fill();
 
-    const nestedLength = ((halfLength - Math.ceil(offset)) - settings.minSideSize) * 2;
-    if (nestedLength >= settings.minSideSize && Math.random() > 0.5) {
+    const newLength = ((halfLength - Math.ceil(offset)) - settings.minSideSize) * 2;
+    alert(`cross ${drawLength / 2} ${drawLength / 2} ${newLength}`);
+    if (newLength >= settings.minSideSize
+      && Math.random() > settings.specialNestingProbability.cross) {
       drawAcc(numOfIter + 1,
         nextDistanceColor(nextColor, settings.minColorDist, settings.maxColorDist),
         centerX, centerY,
-        nestedLength, nestedLength,
+        newLength, newLength,
         lastSplits, true, settings);
     }
   }
 
   const actions = [];
 
-  if (length < settings.minSideSize * 2
-    && height < settings.minSideSize * 2) {
-    actions.push(drawRect);
-  }
-  if (length >= settings.minDrawLength
-    && length <= settings.maxDrawLength
-    && height >= settings.minDrawLength
-    && height <= settings.maxDrawLength) {
-    actions.push(drawRect);
-  }
-  // can't be split in two or indented
-  if ((length % 2 === 1 || height % 2 === 1)
-    && (length < settings.minSideSize * 3 || height < settings.minSideSize * 3)) {
-    actions.push(drawRect);
+  const lengthFactors = splitFactors(drawLength);
+  const heightFactors = splitFactors(drawHeight);
+  // can't be split
+  if (lengthFactors.length === 0 && heightFactors.length === 0) {
+    // alert('cant split');
+    actions.push({
+      action: drawRect,
+      weight: 1,
+    });
   }
 
-  const lengthFactors = splitFactors(length);
-  const heightFactors = splitFactors(height);
-  if ((!lastSplits.splitLength || heightFactors.length === 0)
-    && lengthFactors.length > 0) {
-    actions.push(splitFunction(lengthFactors, true));
+  let weights;
+  if (drawLength !== drawHeight) {
+    // Rectangles
+    // alert('Rect');
+    weights = settings.rectWeights;
+
+    if (drawLength >= settings.drawRatios.minLengthRatio * settings.length
+      && drawLength <= settings.drawRatios.maxLengthRatio * settings.length
+      && drawHeight >= settings.drawRatios.minHeightRatio * settings.height
+      && drawHeight <= settings.drawRatios.maxHeightRatio * settings.height) {
+      actions.push({
+        action: drawRect,
+        weight: weights.drawRect,
+      });
+    }
+
+    if ((!lastSplits.splitLength || heightFactors.length === 0)
+      && lengthFactors.length > 0) {
+      actions.push({
+        action: splitFunction(lengthFactors, true),
+        weight: weights.split,
+      });
+    }
+    if ((!lastSplits.splitHeight || lengthFactors.length === 0)
+      && heightFactors.length > 0) {
+      actions.push({
+        action: splitFunction(heightFactors, false),
+        weight: weights.split,
+      });
+    }
+
+    if (numOfIter >= settings.minIterations.minIndentIter
+      && drawLength >= settings.minSideSize * 3 && drawHeight >= settings.minSideSize * 3) {
+      actions.push({
+        action: indentRect,
+        weight: weights.indentRect,
+      });
+    }
+  } else {
+    // Squares
+    // alert('Square');
+    weights = settings.squareWeights;
+    if (drawLength >= settings.drawRatios.minLengthRatio * settings.length
+      && drawLength <= settings.drawRatios.maxLengthRatio * settings.length
+      && drawHeight >= settings.drawRatios.minHeightRatio * settings.height
+      && drawHeight <= settings.drawRatios.maxHeightRatio * settings.height) {
+      actions.push({
+        action: drawRect,
+        weight: weights.drawRect,
+      });
+    }
+
+    if ((!lastSplits.splitLength || heightFactors.length === 0)
+      && lengthFactors.length > 0) {
+      actions.push({
+        action: splitFunction(lengthFactors, true),
+        weight: weights.split,
+      });
+    }
+    if ((!lastSplits.splitHeight || lengthFactors.length === 0)
+      && heightFactors.length > 0) {
+      actions.push({
+        action: splitFunction(heightFactors, false),
+        weight: weights.split,
+      });
+    }
+
+    if (numOfIter >= settings.minIterations.minIndentIter
+      && drawLength >= settings.minSideSize * 3 && drawHeight >= settings.minSideSize * 3) {
+      actions.push({
+        action: indentRect,
+        weight: weights.indentRect,
+      });
+    }
+
+    if (numOfIter >= settings.minIterations.minOppositesSquareIter
+      && drawLength >= settings.minSideSize * 3) {
+      actions.push({
+        action: (centerX, centerY) => {
+          drawOpposites(Math.round(drawLength / (settings.minSideSize * 2)), curColor,
+            nextColor, centerX, centerY, drawLength);
+        },
+        weight: weights.oppositesSquare,
+      });
+    }
+    if (numOfIter >= settings.minIterations.minBlendSquareIter
+      && drawLength >= settings.minSideSize * 3) {
+      actions.push({
+        action: (centerX, centerY) => {
+          drawBlend(Math.round(drawLength / (settings.minSideSize * 2)), curColor,
+            nextColor, centerX, centerY, drawLength);
+        },
+        weight: weights.blendSquare,
+      });
+    }
+    if (numOfIter >= settings.minIterations.minDistanceSquareIter
+      && drawLength >= settings.minSideSize * 3) {
+      actions.push({
+        action: (centerX, centerY) => {
+          drawDistance(Math.round(drawLength / (settings.minSideSize * 2)),
+            curColor, settings.minColorDist, settings.maxColorDist, centerX, centerY, drawLength);
+        },
+        weight: weights.distanceSquare,
+      });
+    }
+
+    const specialOffset = specialShapePlaceable ? 0 : 2 * settings.minSideSize;
+    if (numOfIter >= settings.minIterations.minCircleIter
+      && length >= settings.minSideSize * 3 + specialOffset) {
+      actions.push({
+        action: specialShapePlaceable ? circle : indentSpecialFunction(circle),
+        weight: weights.circle,
+      });
+    }
+
+    // if (numOfIter >= settings.minIterations.minDiamondIter
+    //   && length >= settings.minSideSize * 3 + specialOffset) {
+    //   actions.push({
+    //     action: specialShapePlaceable ? diamond : indentSpecialFunction(diamond),
+    //     weight: weights.diamond,
+    //   });
+    // }
+
+    // if (numOfIter >= settings.minIterations.minCrossIter
+    //   && length >= settings.minSideSize * 4 + specialOffset) {
+    //   actions.push({
+    //     action: specialShapePlaceable ? cross : indentSpecialFunction(cross),
+    //     weight: weights.cross,
+    //   });
+    // }
   }
-  if ((!lastSplits.splitHeight || lengthFactors.length === 0)
-    && heightFactors.length > 0) {
-    actions.push(splitFunction(heightFactors, false));
-  }
 
-  // if (numOfIter >= settings.minIterations.minIndentIter
-  //   && length >= settings.minSideSize * 3 && height >= settings.minSideSize * 3) {
-  //   actions.push(indent);
-  // }
-
-  // if (numOfIter >= settings.minIterations.minSquareIter && length === height
-  //   && length >= settings.minSideSize * 3) {
-  //   actions.push((centerX, centerY) => {
-  //     drawOpposites(Math.round(length / (settings.minSideSize * 2)), color,
-  //       nextColor, centerX, centerY, length);
-  //   });
-  //   actions.push((centerX, centerY) => {
-  //     drawBlend(Math.round(length / (settings.minSideSize * 2)), color,
-  //       nextColor, centerX, centerY, length);
-  //   });
-  //   actions.push((centerX, centerY) => {
-  //     drawDistance(Math.round(length / (settings.minSideSize * 2)),
-  //       color, settings.minColorDist, settings.maxColorDist, centerX, centerY, length);
-  //   });
-  // }
-
-
-  // const MIN_CIRCLE_ITER = 1; // FIXME
-  // if (specialShapePlaceable && /* FIXME */ numOfIter >= MIN_CIRCLE_ITER
-  //   && length === height
-  //   && length >= settings.minSideSize * 3) {
-  //   actions.push(circle);
-  // }
-
-  // const MIN_DIAMOND_ITER = 1; // FIXME
-  // if (specialShapePlaceable && /* FIXME */ numOfIter >= MIN_DIAMOND_ITER
-  //   && length === height
-  //   && length >= settings.minSideSize * 3) {
-  //   actions.push(diamond);
-  // }
-
-  // const MIN_CROSS_ITER = 1; // FIXME
-  // if (specialShapePlaceable && /* FIXME */ numOfIter >= MIN_CROSS_ITER
-  //   && length === height
-  //   && length >= settings.minSideSize * 4) {
-  //   actions.push(cross);
-  // }
 
   if (actions.length === 0) {
     // eslint-disable-next-line no-alert
     alert('No valid actions.');
     throw Error('No valid actions.');
   }
-  // FIXME with probability
-  actions[Math.floor(Math.random() * actions.length)](centerXCoord, centerYCoord, length, height);
+  const totalWeight = actions.reduce((prev, curAction) => prev + curAction.weight, 0);
+  let actionValue = Math.random() * totalWeight;
+  while (actionValue > 0) {
+    const curAction = actions.pop();
+    if (actionValue < curAction.weight) {
+      curAction.action(centerXCoord, centerYCoord);
+    }
+    actionValue -= curAction.weight;
+  }
 }
-// function drawProcAcc(numberOfIterations, color, xCoord, yCoord,
-//   length, height, lastSplits, specialShapePlaceable, options) {
-//   const nextColor = nextDistanceColor(color, options.minColorDist, options.maxColorDist);
-
-//   function splitFactors(sideLength) {
-//     return allFactors(sideLength).filter(factor => (sideLength / factor) % 1 === 0
-//       && sideLength / factor >= options.minSideSize && factor <= options.maxSplitAmount);
-//   }
-
-//   function splitFunction(factors, byLength) {
-//     return (centerX, centerY) => {
-//       const numOfSplits = factors[Math.floor(factors.length * Math.random())];
-//       const offsetCenter = byLength ? centerX : centerY;
-//       const offsetSideLength = byLength ? length : height;
-//       const offset = offsetSideLength / numOfSplits;
-//       const offsetStart = offsetCenter - offsetSideLength / 2 + offset / 2;
-//       let curColor = color;
-//       for (let i = 0; i < numOfSplits; i += 1) {
-//         const newCenter = offsetStart + offset * i;
-//         drawProcAcc(numberOfIterations + numOfSplits - 1, curColor,
-//           byLength ? newCenter : centerX,
-//           byLength ? centerY : newCenter,
-//           byLength ? length / numOfSplits : length, byLength ? height : height / numOfSplits,
-//           { splitLength: byLength, splitHeight: !byLength }, false, options);
-//         curColor = nextDistanceColor(curColor, options.minColorDist, options.maxColorDist);
-//       }
-//     };
-//   }
-
-//   function draw(centerX, centerY) {
-//     ctx.fillStyle = color.hex();
-//     ctx.fillRect(centerX - length / 2, centerY - height / 2,
-//       length, height, options.minColorDist, options.minSideSize);
-//   }
-
-//   function indent(centerX, centerY) {
-//     ctx.fillStyle = color.hex();
-//     ctx.fillRect(centerX - length / 2, centerY - height / 2, length, height);
-//     drawProcAcc(numberOfIterations + 1, nextColor, centerX, centerY,
-//       length - 2 * options.minSideSize, height - 2 * options.minSideSize,
-//       lastSplits, true, options);
-//   }
-
-//   function circle(centerX, centerY) {
-//     ctx.beginPath();
-//     ctx.fillStyle = nextColor.hex();
-//     const radius = length / 2;
-//     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-//     ctx.fill();
-//     const newLength = 2 * Math.ceil((radius - options.minSideSize * 2) / Math.SQRT2);
-//     if (newLength >= options.minSideSize && Math.random() > 0.5) {
-//       drawProcAcc(numberOfIterations + 1,
-//         nextDistanceColor(nextColor, options.minColorDist, options.maxColorDist),
-//         centerX, centerY,
-//         newLength, newLength,
-//         lastSplits, true, options);
-//     }
-//   }
-
-//   function diamond(centerX, centerY) {
-//     ctx.beginPath();
-//     ctx.fillStyle = nextColor.hex();
-//     const offset = length / 2;
-//     ctx.moveTo(centerX - offset, centerY);
-//     ctx.lineTo(centerX, centerY - offset);
-//     ctx.lineTo(centerX + offset, centerY);
-//     ctx.lineTo(centerX, centerY + offset);
-//     ctx.fill();
-//     const newLength = 2 * Math.floor(offset / 3);
-//     if (newLength >= options.minSideSize && Math.random() > 0.5) {
-//       drawProcAcc(numberOfIterations + 1,
-//         nextDistanceColor(nextColor, options.minColorDist, options.maxColorDist),
-//         centerX, centerY,
-//         newLength, newLength,
-//         lastSplits, true, options);
-//     }
-//   }
-
-//   function cross(centerX, centerY) {
-//     const halfLength = length / 2;
-//     const offset = length / 6;
-
-//     ctx.fillStyle = color.hex();
-//     // Top-Left Corner
-//     ctx.beginPath();
-//     ctx.moveTo(centerX - halfLength, centerY - halfLength);
-//     // upper
-//     ctx.lineTo(centerX - offset, centerY - halfLength);
-//     ctx.lineTo(centerX, centerY - (halfLength - offset));
-//     ctx.lineTo(centerX + offset, centerY - halfLength);
-//     // Top-Right Corner
-//     ctx.lineTo(centerX + halfLength, centerY - halfLength);
-//     // right
-//     ctx.lineTo(centerX + halfLength, centerY - offset);
-//     ctx.lineTo(centerX + (halfLength - offset), centerY);
-//     ctx.lineTo(centerX + halfLength, centerY + offset);
-//     // Bottom-Right Corner
-//     ctx.lineTo(centerX + halfLength, centerY + halfLength);
-//     // lower
-//     ctx.lineTo(centerX + offset, centerY + halfLength);
-//     ctx.lineTo(centerX, centerY + (halfLength - offset));
-//     ctx.lineTo(centerX - offset, centerY + halfLength);
-//     // Bottom-Left Corner
-//     ctx.lineTo(centerX - halfLength, centerY + halfLength);
-//     // left
-//     ctx.lineTo(centerX - halfLength, centerY + offset);
-//     ctx.lineTo(centerX - (halfLength - offset), centerY);
-//     ctx.lineTo(centerX - halfLength, centerY - offset);
-//     ctx.fill();
-
-//     const nestedLength = ((halfLength - Math.ceil(offset)) - options.minSideSize) * 2;
-//     if (nestedLength >= options.minSideSize && Math.random() > 0.5) {
-//       drawProcAcc(numberOfIterations + 1,
-//         nextDistanceColor(nextColor, options.minColorDist, options.maxColorDist),
-//         centerX, centerY,
-//         nestedLength, nestedLength,
-//         lastSplits, true, options);
-//     }
-//   }
-
-//   const actions = [];
-
-//   if (length < options.minSideSize * 2
-//     && height < options.minSideSize * 2) {
-//     actions.push(draw);
-//   }
-//   if (length >= options.minDrawLength
-//     && length <= options.maxDrawLength
-//     && height >= options.minDrawLength
-//     && height <= options.maxDrawLength) {
-//     actions.push(draw);
-//   }
-//   // can't be split in two or indented
-//   if ((length % 2 === 1 || height % 2 === 1)
-//     && (length < options.minSideSize * 3 || height < options.minSideSize * 3)) {
-//     actions.push(draw);
-//   }
-
-//   const lengthFactors = splitFactors(length);
-//   const heightFactors = splitFactors(height);
-//   if ((!lastSplits.splitLength || heightFactors.length === 0)
-//     && lengthFactors.length > 0) {
-//     actions.push(splitFunction(lengthFactors, true));
-//   }
-//   if ((!lastSplits.splitHeight || lengthFactors.length === 0)
-//     && heightFactors.length > 0) {
-//     actions.push(splitFunction(heightFactors, false));
-//   }
-
-//   if (numberOfIterations >= options.minIndentIter
-//     && length >= options.minSideSize * 3 && height >= options.minSideSize * 3) {
-//     actions.push(indent);
-//   }
-
-//   if (numberOfIterations >= options.minSquareIter && length === height
-//     && length >= options.minSideSize * 3) {
-//     actions.push((centerX, centerY) => {
-//       drawOpposites(Math.round(length / (options.minSideSize * 2)), color,
-//         nextColor, centerX, centerY, length);
-//     });
-//     actions.push((centerX, centerY) => {
-//       drawBlend(Math.round(length / (options.minSideSize * 2)), color,
-//         nextColor, centerX, centerY, length);
-//     });
-//     actions.push((centerX, centerY) => {
-//       drawDistance(Math.round(length / (options.minSideSize * 2)),
-//         color, options.minColorDist, options.maxColorDist, centerX, centerY, length);
-//     });
-//   }
-
-
-//   const MIN_CIRCLE_ITER = 1; // FIXME
-//   if (specialShapePlaceable && /* FIXME */ numberOfIterations >= MIN_CIRCLE_ITER
-//     && length === height
-//     && length >= options.minSideSize * 3) {
-//     actions.push(circle);
-//   }
-
-//   const MIN_DIAMOND_ITER = 1; // FIXME
-//   if (specialShapePlaceable && /* FIXME */ numberOfIterations >= MIN_DIAMOND_ITER
-//     && length === height
-//     && length >= options.minSideSize * 3) {
-//     actions.push(diamond);
-//   }
-
-//   const MIN_CROSS_ITER = 1; // FIXME
-//   if (specialShapePlaceable && /* FIXME */ numberOfIterations >= MIN_CROSS_ITER
-//     && length === height
-//     && length >= options.minSideSize * 4) {
-//     actions.push(cross);
-//   }
-
-//   if (actions.length === 0) {
-//     // eslint-disable-next-line no-alert
-//     alert('No valid actions.');
-//     throw Error('No valid actions.');
-//   }
-//   actions[Math.floor(Math.random() * actions.length)](xCoord, yCoord, length, height);
-// }
 
 function draw(settings) {
-  alert('begin');
+  // alert('begin');
   let drawSettings = settings;
   if (settings === null || settings === undefined) {
     drawSettings = defaultSettings();
@@ -675,38 +590,8 @@ function draw(settings) {
     drawSettings.length / 2, drawSettings.height / 2,
     drawSettings.length, drawSettings.height,
     { splitLength: false, splitHeight: false }, false, drawSettings);
-  alert('final');
+  // alert('final');
 }
-// function drawProc(centerX, centerY, length, height,
-//   minColorDist = 255, maxColorDist = 255 * 3, minSideSize = 1,
-//   minIndentIter = 5, minSquareIter = 5,
-//   minDrawLength = 0, maxDrawLength = 100,
-//   maxSplitAmount = 5) {
-//   drawProcAcc(0, nextDistanceColor(randomColor(), minColorDist, maxColorDist),
-//     centerX, centerY, length, height,
-//     { splitLength: false, splitHeight: false },
-//     false,
-//     {
-//       minColorDist,
-//       maxColorDist,
-//       minSideSize,
-//       minIndentIter,
-//       minSquareIter,
-//       minDrawLength,
-//       maxDrawLength,
-//       maxSplitAmount,
-//     });
-// }
-
-// function drawProcCanvasFill(minColorDist = 255, maxColorDist = 255 * 3, minSideSize = 1,
-//   minIndentIter = 5, minSquareIter = 5,
-//   minDrawLength = 0, maxDrawLength = 100,
-//   maxSplitAmount = 5) {
-//   drawProc(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height,
-//     minColorDist, maxColorDist, minSideSize,
-//     minIndentIter, minSquareIter, minDrawLength, maxDrawLength, maxSplitAmount);
-// }
-
 
 //----------------------------------------------------
 
