@@ -652,14 +652,14 @@ settings.minSideSize = settings.width / 192;
 
 // Settings tests:
 // settings.startColor = makeColor(80, 80, 80);
-settings.minColorDist = 0;
+// settings.minColorDist = 0;
+settings.minColorDist = 50;
 // settings.maxColorDist = 0;
-settings.maxColorDist = 0;
+settings.maxColorDist = 100;
+// settings.maxColorDist = 255 * 3;
 
 draw(settings);
 
 
 // IDEA split based on ratio
-// TODO weight things better and/or custom weighting
-// IDEA set starting color
 // Idea indented and non-indented circle/diamond
