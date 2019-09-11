@@ -67,15 +67,8 @@ function manhattanColorDistance(color1, color2) {
 }
 
 function nextDistanceColor(color, minD, maxD) {
-  const colorArr = color.arr();
-  const maxDistArr = colorArr.map(v => Math.max(v, 255 - v));
-  const maxDist = maxDistArr.reduce((prev, cur) => prev + cur, 0);
-  const difDist = Math.min(maxDist, minD);
-  let curDist = difDist;
-  let curMaxDist = maxD;
-
   function getVal(initVal, diff) {
-    if (initVal + diff <= 255 && initVal - diff > 0) {
+    if (initVal + diff <= 255 && initVal - diff >= 0) {
       if (Math.random() < 0.5) {
         return initVal + diff;
       }
@@ -86,28 +79,28 @@ function nextDistanceColor(color, minD, maxD) {
     return initVal - diff;
   }
 
-  const newColorArr = [];
+  const colorArr = color.arr();
+  const maxDistArr = colorArr.map(v => Math.max(v, 255 - v));
+  const maxDist = maxDistArr.reduce((prev, cur) => prev + cur, 0);
 
-  let minVal1 = curDist - (maxDistArr[1] + maxDistArr[2]);
-  if (minVal1 < 0) { minVal1 = 0; }
-  const randVal1 = minVal1
-    + Math.floor(Math.min((maxDistArr[0] - minVal1), maxD) * Math.random());
-  curDist -= randVal1;
-  curMaxDist -= randVal1;
-  newColorArr.push(getVal(colorArr[0], randVal1));
+  const numberOfPoints = Math.min(maxDist, maxD,
+    minD + Math.floor((Math.min(maxDist, maxD) - minD) * Math.random()));
 
-  let minVal2 = curDist - (maxDistArr[2]);
-  if (minVal2 < 0) { minVal2 = 0; }
-  const randVal2 = minVal2
-    + Math.floor(Math.min((maxDistArr[1] - minVal2), maxD) * Math.random());
-  curDist -= randVal2;
-  curMaxDist -= randVal2;
-  newColorArr.push(getVal(colorArr[1], randVal2));
+  const rWeight = Math.random() * maxDistArr[0];
+  const gWeight = Math.random() * maxDistArr[1];
+  const bWeight = Math.random() * maxDistArr[2];
+  const totalWeight = rWeight + gWeight + bWeight;
+  // FIXME figure out rounding
+  const rPoints = Math.round(numberOfPoints * rWeight / totalWeight);
+  const gPoints = Math.round(numberOfPoints * gWeight / totalWeight);
+  const bPoints = numberOfPoints - rPoints - gPoints; // FIXME test that this is fair
+  // const bPoints = Math.round(numberOfPoints * bWeight / totalWeight);
+  // alert(`${numberOfPoints} ${rPoints + gPoints + bPoints}`);
+  // FIXME Test in for loop
 
-  newColorArr.push(getVal(colorArr[2],
-    Math.min(Math.max(curDist, Math.floor(maxDistArr[2] * Math.random())), curMaxDist)));
-
-  return makeColor(...newColorArr);
+  return makeColor(getVal(colorArr[0], rPoints),
+    getVal(colorArr[1], gPoints),
+    getVal(colorArr[2], bPoints));
 }
 
 //-----------------------------------------------------
@@ -615,10 +608,10 @@ const settings = defaultSettings();
 settings.minSideSize = settings.width / 192;
 
 // Settings tests:
-settings.startColor = makeColor(0, 0, 0);
-settings.minColorDist = 0;
+settings.startColor = makeColor(80, 80, 80);
+settings.minColorDist = 50;
 // settings.maxColorDist = 0;
-settings.maxColorDist = 0;
+settings.maxColorDist = 50;
 
 draw(settings);
 
