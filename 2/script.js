@@ -105,7 +105,7 @@ function nextDistanceColor(color, minD, maxD) {
   newColorArr.push(getVal(colorArr[1], randVal2));
 
   newColorArr.push(getVal(colorArr[2],
-    Math.min(Math.max(curDist, Math.floor(maxDistArr[2] * Math.random())))), curMaxDist);
+    Math.min(Math.max(curDist, Math.floor(maxDistArr[2] * Math.random())), curMaxDist)));
 
   return makeColor(...newColorArr);
 }
@@ -222,8 +222,8 @@ function defaultSettings() {
     height: 600,
     minColorDist: 256 * 1 - 1,
     maxColorDist: 256 * 3 - 1,
-    minSideSize: 5, // TEMP
-    // minSideSize: 5,
+    minSideSize: 5,
+    // startColor: null,
     drawRatios: {
       minLengthRatio: 0,
       maxLengthRatio: 0.15,
@@ -588,8 +588,9 @@ function draw(settings) {
     drawSettings = defaultSettings();
   }
   [canvas.width, canvas.height] = [drawSettings.length, drawSettings.height];
-  drawAcc(0, nextDistanceColor(randomColor(), drawSettings.minColorDist, drawSettings.maxColorDist),
-    drawSettings.length / 2, drawSettings.height / 2,
+  const color = drawSettings.startColor ? drawSettings.startColor
+    : nextDistanceColor(randomColor(), drawSettings.minColorDist, drawSettings.maxColorDist);
+  drawAcc(0, color, drawSettings.length / 2, drawSettings.height / 2,
     drawSettings.length, drawSettings.height,
     { splitLength: false, splitHeight: false }, false, drawSettings);
   // alert('final');
@@ -604,27 +605,26 @@ function draw(settings) {
 // drawBlend(10, makeHexColor('#FF0000'), makeHexColor('#005500'), 450, 150, 300);
 // drawDistance(10, null, 255 * 1, 255 * 3, 150, 450, 300);
 
-// [canvas.width, canvas.height] = [1024, 512];
-// [canvas.width, canvas.height] = [1200, 600];
-// drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
-//   /* minSideSize */ 5, /* minIdentIter */ 5, /* minSquareIter */ 6,
-//   /* minDrawLength */ 0 * Math.max(canvas.width, canvas.height),
-//   /* maxDrawLength */ 0.1 * Math.max(canvas.width, canvas.height),
-//   /* maxSplitAmount */ 5);
+// draw()
 
+const settings = defaultSettings();
 // Wallpaper
-// [canvas.width, canvas.height] = [1920, 1080];
+[settings.width, settings.height] = [1920, 1080];
 // Wallpaper in half testing
-// [canvas.width, canvas.height] = [1920 / 2, 1080 / 2];
-// drawProcCanvasFill(/* minColorDist */ 255 * 1.0, /* maxColorDist */ 255 * 3.0,
-//   /* minSideSize */ canvas.width / 192, /* minIdentIter */ 4, /* minSquareIter */ 4,
-//   /* minDrawLength */ 0 * Math.max(canvas.width, canvas.height),
-//   /* maxDrawLength */ 0.1 * Math.max(canvas.width, canvas.height),
-//   /* maxSplitAmount */ 5);
+[settings.width, settings.height] = [1920 / 2, 1080 / 2];
+settings.minSideSize = settings.width / 192;
 
-draw();
+// Settings tests:
+settings.startColor = makeColor(0, 0, 0);
+settings.minColorDist = 0;
+// settings.maxColorDist = 0;
+settings.maxColorDist = 0;
+
+draw(settings);
+
 
 // IDEA split based on ratio
 // TODO weight things better and/or custom weighting
 // IDEA set starting color
 // Idea indented and non-indented circle/diamond
+// BUG min and max colorDistance
