@@ -324,26 +324,24 @@ function drawAcc(numOfIter, color, centerXCoord, centerYCoord, length, height,
     };
   }
 
+  function floorEvenOrOdd(n, m) {
+    if ((n + m) % 2 === 0) {
+      return n;
+    }
+    return n - 1;
+  }
+
   function circle(centerX, centerY) {
     ctx.beginPath();
     ctx.fillStyle = nextColor.hex();
     const radius = drawLength / 2;
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
     ctx.fill();
-    // const newLength = (radius);
-    const newLength = (radius - settings.minSideSize);
-    // const newLength = Math.floor((radius - settings.minSideSize) * Math.SQRT2);
-    // if drawLength is odd,
-    //  newLength should be odd
-    //  radius ends in .5
-    // if drawLength is even,
-    //  newLength should be even
-    //  radius ends in .0
-    alert(`circle ${drawLength} ${(radius - settings.minSideSize) * Math.SQRT2} ${newLength}`);
-    // alert(`circle ${drawLength / 2} ${drawLength / 2} ${newLength}`);
+    const newLength = floorEvenOrOdd(
+      Math.floor((radius - settings.minSideSize) * Math.SQRT2), drawLength,
+    );
     if (newLength >= settings.minSideSize
-      && true) {
-      // && Math.random() > settings.specialNestingProbability.circle) {
+      && Math.random() > settings.specialNestingProbability.circle) {
       drawAcc(numOfIter + 1,
         nextDistanceColor(nextColor, settings.minColorDist, settings.maxColorDist),
         centerX, centerY,
@@ -361,8 +359,10 @@ function drawAcc(numOfIter, color, centerXCoord, centerYCoord, length, height,
     ctx.lineTo(centerX + offset, centerY);
     ctx.lineTo(centerX, centerY + offset);
     ctx.fill();
-    const newLength = Math.floor(2 * offset / 3) / 2;
-    alert(`diamond ${drawLength / 2} ${drawLength / 2} ${newLength}`);
+    const newLength = floorEvenOrOdd(
+      Math.floor(drawLength / 2 - Math.SQRT2 * settings.minSideSize), drawLength,
+    );
+    // const newLength = floorEvenOrOdd(Math.floor(drawLength / 2), drawLength);
     if (newLength >= settings.minSideSize
       && Math.random() > settings.specialNestingProbability.diamond) {
       drawAcc(numOfIter + 1,
@@ -405,8 +405,10 @@ function drawAcc(numOfIter, color, centerXCoord, centerYCoord, length, height,
     ctx.lineTo(centerX - halfLength, centerY - offset);
     ctx.fill();
 
-    const newLength = ((halfLength - Math.ceil(offset)) - settings.minSideSize) * 2;
-    alert(`cross ${drawLength / 2} ${drawLength / 2} ${newLength}`);
+    // const newLength = drawLength - 2 * offset;
+    const newLength = floorEvenOrOdd(
+      Math.floor(drawLength - 2 * offset - 2 * settings.minSideSize),
+    );
     if (newLength >= settings.minSideSize
       && Math.random() > settings.specialNestingProbability.cross) {
       drawAcc(numOfIter + 1,
@@ -545,21 +547,21 @@ function drawAcc(numOfIter, color, centerXCoord, centerYCoord, length, height,
       });
     }
 
-    // if (numOfIter >= settings.minIterations.minDiamondIter
-    //   && length >= settings.minSideSize * 3 + specialOffset) {
-    //   actions.push({
-    //     action: specialShapePlaceable ? diamond : indentSpecialFunction(diamond),
-    //     weight: weights.diamond,
-    //   });
-    // }
+    if (numOfIter >= settings.minIterations.minDiamondIter
+      && length >= settings.minSideSize * 3 + specialOffset) {
+      actions.push({
+        action: specialShapePlaceable ? diamond : indentSpecialFunction(diamond),
+        weight: weights.diamond,
+      });
+    }
 
-    // if (numOfIter >= settings.minIterations.minCrossIter
-    //   && length >= settings.minSideSize * 4 + specialOffset) {
-    //   actions.push({
-    //     action: specialShapePlaceable ? cross : indentSpecialFunction(cross),
-    //     weight: weights.cross,
-    //   });
-    // }
+    if (numOfIter >= settings.minIterations.minCrossIter
+      && length >= settings.minSideSize * 4 + specialOffset) {
+      actions.push({
+        action: specialShapePlaceable ? cross : indentSpecialFunction(cross),
+        weight: weights.cross,
+      });
+    }
   }
 
 
@@ -625,3 +627,4 @@ draw();
 // IDEA split based on ratio
 // TODO weight things better and/or custom weighting
 // IDEA set starting color
+// Idea indented and non-indented circle/diamond
