@@ -1,0 +1,4 @@
+[[language]]
+name = "javascript"
+formatter = { command = 'npx', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
+# auto-format = true

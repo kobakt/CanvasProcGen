@@ -1,40 +1,78 @@
-"use strict"
+"use strict";
 // alert("main.js");
 
 import { defaultSettings } from "./settings.js";
-import { randomColor, nextDistanceColor } from "./colors.js"
-import { drawAcc } from "./script.js"
+import { randomColor, nextDistanceColor } from "./colors.js";
+import { drawRec } from "./draw.js";
+/**
+@typedef {import("./colors.js").Color} Color
+@typedef {import("./settings.js").Settings} Settings
+*/
 
-
-const canvas = document.getElementById('canvas');
+const canvas = document.getElementById("canvas");
 // @ts-ignore
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext("2d");
 
 // Drawing functions
 
+/**
+ * @param {Settings} settings
+ */
 function randStartColor(settings) {
+  //TODO: idk why i did it this way, but i'll leave for now 
   return nextDistanceColor(
-    randomColor(), 
-    settings.minColorDist, 
-    settings.maxColorDist
-  )
+    randomColor(),
+    settings.minColorDist,
+    settings.maxColorDist,
+  );
 }
-
+  
+/**
+ * @param {Settings} settings
+ */
 function draw(settings) {
   // alert('begin');
-  let drawSettings = settings;
   if (settings === null || settings === undefined) {
-    drawSettings = defaultSettings();
+    settings = defaultSettings();
   }
+  // @ts-ignore
   [canvas.width, canvas.height] = [
-    drawSettings.length, 
-    drawSettings.height
+    settings.width,
+    settings.height,
   ];
-  const color = drawSettings.startColor ? drawSettings.startColor
-    : randStartColor(drawSettings);
-  drawAcc(0, color, drawSettings.length / 2, drawSettings.height / 2,
-    drawSettings.length, drawSettings.height,
-    { splitLength: false, splitHeight: false }, false, drawSettings);
+
+  let startColor = settings.startColor
+    ? settings.startColor
+    : randStartColor(settings);
+
+  /**
+  @type {GlobalContext} global
+  */
+  let global = {
+    settings,
+    // TODO: Probably change to like a queue to prevent
+    // stack oveflow.
+    callback: drawRec,
+    ctx,
+  }
+  /**
+  @type {LocalContext} local
+  */
+  let local = {
+      length: settings.width,
+      height: settings.height,
+      centerX: settings.width / 2,
+      centerY: settings.height / 2,
+      color: startColor,
+      numOfIter: 0,
+      split: {
+          lastSplitByLength: false,
+          lastSplitByHeight: false
+      },
+      specialShapePlaceable: false,
+  }
+
+  drawRec(global, local);
   // alert('final');
 }
 
@@ -56,7 +94,6 @@ settings.maxColorDist = 100;
 // settings.maxColorDist = 255 * 3;
 
 draw(settings);
-
 
 // IDEA split based on ratio
 // Idea indented and non-indented circle/diamond

@@ -1,0 +1,42 @@
+"use strict";
+
+/**
+@typedef {Object} Shape
+@prop {function} isAvailable
+@prop {function} weight
+@prop {function} drawShape
+*/
+
+/**
+@param {function} isAvailable 
+@param {function} weight
+@param {function} drawShape
+@returns {Shape}
+*/
+function makeShapeObject(isAvailable, weight, drawShape) {
+  return {
+    isAvailable,
+    weight,
+    drawShape,
+  };
+}
+
+// function floorEvenOrOdd(n, m) {
+//   if ((n + m) % 2 === 0) {
+//     return n;
+//   }
+//   return n - 1;
+// }
+
+// function indentSpecialFunction(specialFunc) {
+//   return (centerX, centerY) => {
+//     drawRect(centerX, centerY);
+//     drawLength -= 2 * settings.minSideSize;
+//     drawHeight -= 2 * settings.minSideSize;
+//     curColor = nextColor;
+//     nextColor = nextDistanceColor(curColor, settings.minColorDist, settings.maxColorDist);
+//     specialFunc(centerX, centerY);
+//   };
+// }
+
+export { makeShapeObject };
