@@ -1,10 +1,11 @@
 "use strict";
 
+
 /**
 @typedef {Object} Shape
-@prop {function} isAvailable
-@prop {function} weight
-@prop {function} drawShape
+@prop {ContextFunction} isAvailable
+@prop {ContextFunction} weight
+@prop {ContextFunction} drawShape
 */
 
 /**

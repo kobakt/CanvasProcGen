@@ -1,16 +1,16 @@
 import { makeShapeObject } from "./shapeObject.js";
-import { defaultSettings } from "../settings.js";
 import { hex } from "../colors.js";
 
-function isAvailable(context) {
-  let settings = context.settings;
-  let { drawLength, drawHeight } = context.draw;
-  return (
-    drawLength >= settings.drawRatios.minLengthRatio * settings.length &&
-    drawLength <= settings.drawRatios.maxLengthRatio * settings.length &&
-    drawHeight >= settings.drawRatios.minHeightRatio * settings.height &&
-    drawHeight <= settings.drawRatios.maxHeightRatio * settings.height
-  );
+/**
+ * @param {GlobalContext} global
+ * @param {LocalContext} local
+ */
+function isAvailable(global, local) {
+  let drawRatios = global.settings.drawRatios;
+  return local.length >= drawRatios.minLengthRatio * global.settings.width
+    && local.length <= drawRatios.maxLengthRatio * global.settings.width &&
+    local.height >= drawRatios.minHeightRatio * global.settings.height &&
+    local.height <= drawRatios.maxHeightRatio * global.settings.height;
 }
 
 /**
@@ -30,8 +30,7 @@ function drawRect(global, local) {
 function rectObject() {
   // also separate square weight to possibly look at
   return makeShapeObject(
-    // isAvailable,
-    () => true, //TODO
+    isAvailable,
     (global) => global.settings.rectWeights.drawRect,
     drawRect,
   );

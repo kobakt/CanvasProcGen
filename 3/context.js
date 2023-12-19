@@ -43,3 +43,9 @@ Used for a sepcific drawing call
 @prop {SplitContext} split
 @prop {boolean} specialShapePlaceable
 */
+
+/**
+@typedef {function} ContextFunction
+@param {GlobalContext} global
+@param {LocalContext} local
+*/

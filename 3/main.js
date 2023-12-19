@@ -80,17 +80,24 @@ function draw(settings) {
 
 const settings = defaultSettings();
 // Wallpaper
-[settings.width, settings.height] = [1920, 1080];
-// Wallpaper in half testing
-[settings.width, settings.height] = [1920 / 2, 1080 / 2];
+// [settings.width, settings.height] = [1920, 1080];
+// Wallpaper cut by value testing
+let val = 2;
+[settings.width, settings.height] = [1920 / val, 1080 / val];
 settings.minSideSize = settings.width / 192;
+// settings.minSideSize = settings.width / 5;
 
 // Settings tests:
 // settings.startColor = makeColor(80, 80, 80);
+// Min
 // settings.minColorDist = 0;
 settings.minColorDist = 50;
+// settings.minColorDist = 255;
+// Max
 // settings.maxColorDist = 0;
-settings.maxColorDist = 100;
+settings.maxColorDist = 50;
+// settings.maxColorDist = 100;
+// settings.maxColorDist = 255;
 // settings.maxColorDist = 255 * 3;
 
 draw(settings);

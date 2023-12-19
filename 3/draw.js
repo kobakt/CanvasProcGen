@@ -52,6 +52,10 @@ function drawRec(global, local) {
   let availableShapes = shapes.filter(
     x => x.isAvailable(global, local)
   );
+  if (availableShapes.length === 0) {
+    availableShapes.push(rectObject());
+  }
+  
   let curShape = pickShape(global, local, availableShapes);
   curShape.drawShape(global, local);
 }
