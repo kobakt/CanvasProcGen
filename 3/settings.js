@@ -40,6 +40,7 @@
 @prop {number} specialNestingProbability.diamond
 @prop {number} specialNestingProbability.cross
 @prop {Color?} startColor
+@prop {boolean} splitRestrict
 */
 
 /**
@@ -63,7 +64,7 @@ function defaultSettings() {
     minIterations: {
       minIndentIter: 4,
       minOppositesSquareIter: 5,
-      minBlendSquareIter: 5,
+      minBlendSquareIter: 4,
       minDistanceSquareIter: 5,
       minCircleIter: 5,
       minDiamondIter: 5,
@@ -91,6 +92,8 @@ function defaultSettings() {
       cross: 0.5,
     },
     startColor: null,
+    splitRestrict: true,
+    // splitRestrict: false,
   };
 }
 

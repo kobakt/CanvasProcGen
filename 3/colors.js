@@ -1,6 +1,12 @@
 "use strict";
 // alert("colors.js")
 
+/**
+@param {number} r 
+@param {number} g
+@param {number} b 
+@returns {string}
+*/
 function makeHexCode(r, g, b) {
   return "#".concat(
     [r, g, b].reduce((prev, cur) => {
@@ -15,10 +21,8 @@ function makeHexCode(r, g, b) {
         value = Math.round(cur).toString(16);
       } else if (cur > 255) {
         value = "FF";
-        // eslint-disable-next-line no-alert
         alert("Color value above 255.");
       } else {
-        // eslint-disable-next-line no-alert
         alert("Color value does not exist.");
         throw Error("Color value does not exist.");
       }
@@ -32,7 +36,6 @@ function makeHexCode(r, g, b) {
 @prop {number} r
 @prop {number} g
 @prop {number} b
-//TODO add function stuff
 */
 
 /**
@@ -46,25 +49,26 @@ function makeColor(r, g, b) {
     r: Math.round(r),
     g: Math.round(g),
     b: Math.round(b),
-    //wrecks structuredClone
-    // hex() {
-    //   return makeHexCode(this.r, this.g, this.b);
-    // },
-    // arr() {
-    //   return [this.r, this.g, this.b];
-    // },
   };
 }
 
+/**
+@param {Color} color
+*/
 function hex(color) {
   return makeHexCode(color.r, color.g, color.b);
 }
 
+/**
+@param {Color} color
+*/
 function arr(color) {
   return [color.r, color.g, color.b];
 }
 
-// eslint-disable-next-line no-unused-vars
+/**
+@param {string} hexCode
+*/
 function makeHexColor(hexCode) {
   return makeColor(
     parseInt(hexCode.substr(1, 2), 16),
@@ -117,7 +121,8 @@ function nextDistanceColor(color, minD, maxD) {
   const numberOfPoints = Math.min(
     maxDist,
     maxD,
-    minD + Math.round((Math.min(maxDist, maxD) - minD) * Math.random()),
+    minD +
+      Math.round((Math.min(maxDist, maxD) - minD) * Math.random()),
   );
 
   const rWeight = Math.random() * maxDistArr[0];
@@ -158,6 +163,18 @@ function nextDistanceColor(color, minD, maxD) {
   );
 }
 
+/**
+ * @param {GlobalContext} global
+ * @param {LocalContext} local
+ */
+function nextColor(global, local) {
+  return nextDistanceColor(
+    local.color,
+    global.settings.minColorDist,
+    global.settings.maxColorDist,
+  );
+}
+
 // testing nextColorDistance
 // const n = 100000000;
 // const [min, max] = [0, 0];
@@ -185,6 +202,11 @@ function nextDistanceColor(color, minD, maxD) {
 // }
 // alert(`average color distances ${values.map(v => v / n)}`);
 
+/**
+ * @param {number} numberOfColors
+ * @param {Color} color1
+ * @param {Color} color2
+ */
 function getBlendColors(numberOfColors, color1, color2) {
   if (numberOfColors <= 1) {
     return [color1];
@@ -193,15 +215,16 @@ function getBlendColors(numberOfColors, color1, color2) {
   const colorArr2 = arr(color2);
   const colors = [];
 
-  for (let i = 0; i < numberOfColors; i += 1) {
+  for (let i = 0; i < numberOfColors; i++) {
     const cArrFinal = [];
     for (let rgbIndex = 0; rgbIndex < 3; rgbIndex += 1) {
       const m =
-        (colorArr2[rgbIndex] - colorArr1[rgbIndex]) / (numberOfColors - 1);
+        (colorArr2[rgbIndex] - colorArr1[rgbIndex]) /
+        (numberOfColors - 1);
       cArrFinal.push(m * i + colorArr1[rgbIndex]);
     }
     // colors.push(makeColor(...cArrFinal);
-    colors.push(makeColor(cArrFinal[0], cArrFinal[1], cArrFinal[3]));
+    colors.push(makeColor(cArrFinal[0], cArrFinal[1], cArrFinal[2]));
   }
   return colors;
 }
@@ -214,7 +237,7 @@ export {
   euclideanColorDistance,
   manhattanColorDistance,
   getBlendColors,
-  nextDistanceColor,
+  nextColor,
   hex,
   arr,
 };

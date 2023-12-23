@@ -1,6 +1,5 @@
 "use strict";
 
-
 /**
 @typedef {Object} Shape
 @prop {ContextFunction} isAvailable
@@ -9,9 +8,9 @@
 */
 
 /**
-@param {function} isAvailable 
-@param {function} weight
-@param {function} drawShape
+@param {ContextFunction} isAvailable 
+@param {ContextFunction} weight
+@param {ContextFunction} drawShape
 @returns {Shape}
 */
 function makeShapeObject(isAvailable, weight, drawShape) {
@@ -20,6 +19,13 @@ function makeShapeObject(isAvailable, weight, drawShape) {
     weight,
     drawShape,
   };
+}
+
+/**
+ * @param {LocalContext} local
+ */
+function isSquare(local) {
+  return local.length === local.height;
 }
 
 // function floorEvenOrOdd(n, m) {
@@ -40,4 +46,4 @@ function makeShapeObject(isAvailable, weight, drawShape) {
 //   };
 // }
 
-export { makeShapeObject };
+export { makeShapeObject, isSquare };

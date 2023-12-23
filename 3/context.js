@@ -17,7 +17,7 @@ Used and not modified for all calls
 @typedef GlobalContext 
 @prop {Settings} settings
 @prop {function} callback //TODO define function
-@prop {Object} ctx
+@prop {CanvasRenderingContext2D} ctx
 */
 
 /*
@@ -45,7 +45,7 @@ Used for a sepcific drawing call
 */
 
 /**
-@typedef {function} ContextFunction
+@callback ContextFunction
 @param {GlobalContext} global
 @param {LocalContext} local
 */

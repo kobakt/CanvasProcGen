@@ -1,15 +1,34 @@
-"use strict"
+"use strict";
 
 import { makeShapeObject } from "./shapeObject.js";
-import { nextDistanceColor } from "../colors.js";
+import { nextColor } from "../colors.js";
+
+/**
+ * @param {GlobalContext} global
+ * @param {boolean} lastBool
+ * @param {number} curVal
+ * @param {number} otherVal
+ */
+function isAvailableHelp(global, lastBool, curVal, otherVal) {
+  return (
+    (!global.settings.splitRestrict ||
+      !lastBool ||
+      splitFactors(otherVal, global).length === 0) &&
+    splitFactors(curVal, global).length > 0
+  );
+}
 
 /**
  * @param {GlobalContext} global
  * @param {LocalContext} local
  */
 function isAvailableLength(global, local) {
-  return !local.split.lastSplitByLength &&
-    splitFactors(local.length, global).length > 0;
+  return isAvailableHelp(
+    global,
+    local.split.lastSplitByLength,
+    local.length,
+    local.height,
+  );
 }
 
 /**
@@ -17,8 +36,12 @@ function isAvailableLength(global, local) {
  * @param {LocalContext} local
  */
 function isAvailableHeight(global, local) {
-  return !local.split.lastSplitByHeight &&
-    splitFactors(local.height, global).length > 0;
+  return isAvailableHelp(
+    global,
+    local.split.lastSplitByHeight,
+    local.height,
+    local.length,
+  );
 }
 
 /**
@@ -26,8 +49,10 @@ function isAvailableHeight(global, local) {
  * @param {LocalContext} local
  */
 function isAvailable(global, local) {
-  return isAvailableLength(global, local)
-    || isAvailableHeight(global, local);
+  return (
+    isAvailableLength(global, local) ||
+    isAvailableHeight(global, local)
+  );
 }
 
 const savedFactors = {};
@@ -43,7 +68,7 @@ function allFactors(n) {
       factors.push(i);
     }
   }
-  
+
   savedFactors[n] = factors;
   return factors;
 }
@@ -84,21 +109,19 @@ function findFactors(global, local, byLength) {
  */
 function findOffset(local, byLength, numOfSplits) {
   const offsetCenter = byLength ? local.centerX : local.centerY;
-  const offsetSideLength = byLength ? local.length: local.height;
+  const offsetSideLength = byLength ? local.length : local.height;
   const offset = offsetSideLength / numOfSplits;
   return {
     offset,
     offsetStart: offsetCenter - offsetSideLength / 2 + offset / 2,
-  }
+  };
 }
-
-
 
 /**
  * Returns true for by length
  * and false for by height
- * @param {GlobalContext} global 
- * @param {LocalContext} local 
+ * @param {GlobalContext} global
+ * @param {LocalContext} local
  * @returns {boolean}
  */
 function areWeDoingLenOrHght(global, local) {
@@ -108,17 +131,17 @@ function areWeDoingLenOrHght(global, local) {
   if (!isAvailableHeight(global, local)) {
     return true;
   }
-  return Math.random() >= .5;
+  return Math.random() >= 0.5;
 }
 
 /**
- * @param {GlobalContext} global 
- * @param {LocalContext} local 
+ * @param {GlobalContext} global
+ * @param {LocalContext} local
  */
 function drawSplit(global, local) {
   const byLength = areWeDoingLenOrHght(global, local);
 
-  const factors = findFactors(global, local, byLength); 
+  const factors = findFactors(global, local, byLength);
   const randFactor = Math.floor(factors.length * Math.random());
   const numOfSplits = factors[randFactor];
 
@@ -127,24 +150,22 @@ function drawSplit(global, local) {
   //TODO maybe consider not starting with this?
   let iterColor = local.color;
   for (let i = 0; i < numOfSplits; i++) {
-    iterColor = nextDistanceColor(
-      iterColor,
-      global.settings.minColorDist,
-      global.settings.maxColorDist,
-    );
+    iterColor = nextColor(global, local);
     const newCenter = offsetObj.offsetStart + offsetObj.offset * i;
     const newLocal = structuredClone(local);
     newLocal.specialShapePlaceable = false;
     newLocal.split = {
       lastSplitByLength: byLength,
       lastSplitByHeight: !byLength,
-    }
+    };
     newLocal.centerX = byLength ? newCenter : local.centerX;
     newLocal.centerY = byLength ? local.centerY : newCenter;
-    newLocal.length = byLength ? 
-      local.length / numOfSplits : local.length;
-    newLocal.height = byLength ? 
-      local.height : local.height / numOfSplits;
+    newLocal.length = byLength
+      ? local.length / numOfSplits
+      : local.length;
+    newLocal.height = byLength
+      ? local.height
+      : local.height / numOfSplits;
     newLocal.color = iterColor;
     newLocal.numOfIter++;
 
@@ -158,7 +179,6 @@ function drawSplit(global, local) {
 function splitObject() {
   return makeShapeObject(
     isAvailable,
-    // () => true, //TODO
     (global) => global.settings.rectWeights.split,
     drawSplit,
   );

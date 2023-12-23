@@ -1,14 +1,13 @@
-"use strict"
+"use strict";
 /**
 @typedef {import("./colors.js").Color} Color
 @typedef {import("./settings.js").Settings} Settings
 @typedef {import("./shapes/shapeObject.js").Shape} Shape
 */
 
-
 const shapes = [];
 
-// import { blendobject } from "./shapes/blend.js"; 
+// import { blendobject } from "./shapes/blend.js";
 // shapes.push(blendobject());
 
 import { rectObject } from "./shapes/rect.js";
@@ -17,6 +16,11 @@ shapes.push(rectObject());
 import { splitObject } from "./shapes/split.js";
 shapes.push(splitObject());
 
+import { indentObject } from "./shapes/indent.js";
+shapes.push(indentObject());
+
+import { blendObject } from "./shapes/blend.js";
+shapes.push(blendObject());
 
 /**
  * @param {Shape[]} shapesToPick
@@ -49,13 +53,13 @@ function pickShape(global, local, shapesToPick) {
 function drawRec(global, local) {
   // shapes is list of imported ShapeObjects
   // checking which can be drawn
-  let availableShapes = shapes.filter(
-    x => x.isAvailable(global, local)
+  let availableShapes = shapes.filter((x) =>
+    x.isAvailable(global, local),
   );
   if (availableShapes.length === 0) {
     availableShapes.push(rectObject());
   }
-  
+
   let curShape = pickShape(global, local, availableShapes);
   curShape.drawShape(global, local);
 }
