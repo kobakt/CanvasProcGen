@@ -2,6 +2,7 @@
 
 import { makeShapeObject } from "./shapeObject.js";
 import { nextColor } from "../colors.js";
+import { splitFactors } from "./splitFactors.js";
 
 /**
  * @param {GlobalContext} global
@@ -55,54 +56,6 @@ function isAvailable(global, local) {
   );
 }
 
-const savedFactors = {};
-function allFactors(n) {
-  if (savedFactors[n]) {
-    return savedFactors[n];
-  }
-
-  const factors = [];
-  // TODO change to sqrt(n)
-  for (let i = 2; i <= n / 2; i += 1) {
-    if (n % i === 0) {
-      factors.push(i);
-    }
-  }
-
-  savedFactors[n] = factors;
-  return factors;
-}
-
-//TODO also make memoized maybe
-/**
- * Returns possible side lengths such that
- * they fall within min and max side lengths
- * @param {number} sideLength
- * @param {GlobalContext} global
- */
-function splitFactors(sideLength, global) {
-  // savedFactors[sideLength] = allFactors(sideLength);
-  // return savedFactors[sideLength].filter(
-  return allFactors(sideLength).filter(
-    (factor) =>
-      // (sideLength / factor) % 1 === 0 && // Shouldn't need
-      sideLength / factor >= global.settings.minSideSize &&
-      factor <= global.settings.maxSplitAmount,
-  );
-}
-
-/**
- * @param {GlobalContext} global
- * @param {LocalContext} local
- * @param {boolean} byLength
- */
-function findFactors(global, local, byLength) {
-  if (byLength) {
-    return splitFactors(local.length, global);
-  }
-  return splitFactors(local.height, global);
-}
-
 /**
  * @param {LocalContext} local
  * @param {boolean} byLength
@@ -126,13 +79,43 @@ function findOffset(local, byLength, numOfSplits) {
  * @returns {boolean}
  */
 function areWeDoingLenOrHght(global, local) {
-  if (!isAvailableLength(global, local)) {
-    return false;
-  }
-  if (!isAvailableHeight(global, local)) {
-    return true;
-  }
-  return Math.random() >= 0.5;
+  return (
+    isAvailableLength(global, local) &&
+    (!isAvailableHeight(global, local) || Math.random() >= 0.5)
+  );
+}
+
+/**
+ * @param {LocalContext} local
+ * @param {boolean} byLength
+ * @param {number} newCenter
+ * @param {number} numOfSplits
+ * @param {import("../colors.js").Color} iterColor
+ */
+function newSplitLocal(
+  local,
+  byLength,
+  newCenter,
+  numOfSplits,
+  iterColor,
+) {
+  const newLocal = structuredClone(local);
+  newLocal.specialShapePlaceable = false;
+  newLocal.split = {
+    lastSplitByLength: byLength,
+    lastSplitByHeight: !byLength,
+  };
+  newLocal.centerX = byLength ? newCenter : local.centerX;
+  newLocal.centerY = byLength ? local.centerY : newCenter;
+  newLocal.length = byLength
+    ? local.length / numOfSplits
+    : local.length;
+  newLocal.height = byLength
+    ? local.height
+    : local.height / numOfSplits;
+  newLocal.color = iterColor;
+  newLocal.numOfIter++;
+  return newLocal;
 }
 
 /**
@@ -153,30 +136,18 @@ function drawSplit(global, local) {
   for (let i = 0; i < numOfSplits; i++) {
     iterColor = nextColor(global, local);
     const newCenter = offsetObj.offsetStart + offsetObj.offset * i;
-    const newLocal = structuredClone(local);
-    newLocal.specialShapePlaceable = false;
-    newLocal.split = {
-      lastSplitByLength: byLength,
-      lastSplitByHeight: !byLength,
-    };
-    newLocal.centerX = byLength ? newCenter : local.centerX;
-    newLocal.centerY = byLength ? local.centerY : newCenter;
-    newLocal.length = byLength
-      ? local.length / numOfSplits
-      : local.length;
-    newLocal.height = byLength
-      ? local.height
-      : local.height / numOfSplits;
-    newLocal.color = iterColor;
-    newLocal.numOfIter++;
+    const newLocal = newSplitLocal(
+      local,
+      byLength,
+      newCenter,
+      numOfSplits,
+      iterColor,
+    );
 
     global.callback(global, newLocal);
   }
 }
 
-/**
-@returns {import("./shapeObject").Shape}
-*/
 function splitObject() {
   return makeShapeObject(
     isAvailable,
