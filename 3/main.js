@@ -9,17 +9,12 @@ import { drawRec } from "./draw.js";
 @typedef {import("./settings.js").Settings} Settings
 */
 
-const canvas = document.getElementById("canvas");
-/**@type {CanvasRenderingContext2D} ctx*/
-// @ts-ignore
-const ctx = canvas.getContext("2d");
-
 // Drawing functions
 
 /**
- * @param {Settings} settings
+@returns {Color}
  */
-function randStartColor(settings) {
+function randStartColor() {
   return randomColor();
 }
 
@@ -28,15 +23,19 @@ function randStartColor(settings) {
  */
 function draw(settings) {
   // alert('begin');
+  /** @type {HTMLCanvasElement} canvas */
+  // @ts-ignore
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
   if (settings === null || settings === undefined) {
     settings = defaultSettings();
   }
-  // @ts-ignore
   [canvas.width, canvas.height] = [settings.width, settings.height];
 
   let startColor = settings.startColor
     ? settings.startColor
-    : randStartColor(settings);
+    : randStartColor();
 
   /**
   @type {GlobalContext} global
@@ -46,7 +45,7 @@ function draw(settings) {
     // TODO: Probably change to like a queue to prevent
     // stack oveflow.
     callback: drawRec,
-    ctx,
+    ctx: ctx,
   };
   /**
   @type {LocalContext} local
@@ -70,33 +69,38 @@ function draw(settings) {
 }
 
 // Main
+function main() {
+  const globalSettings = defaultSettings();
+  // Wallpaper
+  // [settings.width, settings.height] = [1920, 1080];
+  // Wallpaper cut by value testing
+  const val = 2;
+  // [settings.width, settings.height] = [1920 / val, 1080 / val];
+  // settings.minSideSize = settings.width / 192;
+  [globalSettings.width, globalSettings.height] = [
+    2048 / val,
+    1024 / val,
+  ];
+  globalSettings.minSideSize = globalSettings.width / 256;
+  // settings.minSideSize = settings.width / 5;
 
-const settings = defaultSettings();
-// Wallpaper
-// [settings.width, settings.height] = [1920, 1080];
-// Wallpaper cut by value testing
-const val = 2;
-// [settings.width, settings.height] = [1920 / val, 1080 / val];
-// settings.minSideSize = settings.width / 192;
-[settings.width, settings.height] = [2048 / val, 1024 / val];
-settings.minSideSize = settings.width / 256;
-// settings.minSideSize = settings.width / 5;
+  // Settings tests:
+  // settings.startColor = makeColor(80, 80, 80);
+  // Min
+  // settings.minColorDist = 0;
+  globalSettings.minColorDist = 50;
+  // settings.minColorDist = 255;
+  // Max
+  // settings.maxColorDist = 0;
+  globalSettings.maxColorDist = 50;
+  // settings.maxColorDist = 100;
+  // settings.maxColorDist = 255;
+  // settings.maxColorDist = 255 * 3;
+  // settings.splitRestrict = false;
 
-// Settings tests:
-// settings.startColor = makeColor(80, 80, 80);
-// Min
-// settings.minColorDist = 0;
-settings.minColorDist = 50;
-// settings.minColorDist = 255;
-// Max
-// settings.maxColorDist = 0;
-settings.maxColorDist = 50;
-// settings.maxColorDist = 100;
-// settings.maxColorDist = 255;
-// settings.maxColorDist = 255 * 3;
-// settings.splitRestrict = false;
+  draw(globalSettings);
 
-draw(settings);
-
-// IDEA split based on ratio
-// Idea indented and non-indented circle/diamond
+  // IDEA split based on ratio
+  // Idea indented and non-indented circle/diamond
+}
+main();

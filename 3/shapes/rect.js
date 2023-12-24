@@ -1,5 +1,4 @@
-import { makeShapeObject } from "./shapeObject.js";
-import { hex } from "../colors.js";
+import { drawRect, makeShapeObject } from "./shapeObject.js";
 
 /**
  * @param {GlobalContext} global
@@ -7,23 +6,14 @@ import { hex } from "../colors.js";
  */
 function isAvailable(global, local) {
   let drawRatios = global.settings.drawRatios;
-  return local.length >= drawRatios.minLengthRatio * global.settings.width
-    && local.length <= drawRatios.maxLengthRatio * global.settings.width &&
-    local.height >= drawRatios.minHeightRatio * global.settings.height &&
-    local.height <= drawRatios.maxHeightRatio * global.settings.height;
-}
-
-/**
- * @param {GlobalContext} global
- * @param {LocalContext} local
- */
-function drawRect(global, local) {
-  global.ctx.fillStyle = hex(local.color);
-  global.ctx.fillRect(
-    local.centerX - local.length / 2,
-    local.centerY - local.height / 2,
-    local.length,
-    local.height,
+  return (
+    local.length >=
+      drawRatios.minLengthRatio * global.settings.width &&
+    local.length <=
+      drawRatios.maxLengthRatio * global.settings.width &&
+    local.height >=
+      drawRatios.minHeightRatio * global.settings.height &&
+    local.height <= drawRatios.maxHeightRatio * global.settings.height
   );
 }
 

@@ -1,42 +1,75 @@
-const specialOffset = specialShapePlaceable ? 0 : 2 * settings.minSideSize;
-if (
-  numOfIter >= settings.minIterations.minCircleIter &&
-  length >= settings.minSideSize * 3 + specialOffset
-) {
-  actions.push({
-    action: specialShapePlaceable ? circle : indentSpecialFunction(circle),
-    weight: weights.circle,
-  });
+import { hex, nextColor } from "../colors.js";
+import {
+  drawRect,
+  drawSpecial,
+  floorEvenOrOdd,
+  isSquare,
+  makeShapeObject,
+} from "./shapeObject.js";
+
+/**
+ * @param {GlobalContext} global
+ * @param {LocalContext} local
+ */
+function isAvailable(global, local) {
+  const specialOffset = local.specialShapePlaceable
+    ? 0
+    : 2 * global.settings.minSideSize;
+  return (
+    isSquare(local) &&
+    local.numOfIter >= global.settings.minIterations.minCircleIter &&
+    local.length >= global.settings.minSideSize * 3 + specialOffset
+  );
 }
 
-function circle(centerX, centerY) {
-  ctx.beginPath();
-  ctx.fillStyle = nextColor.hex();
-  const radius = drawLength / 2;
-  ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-  ctx.fill();
+/**
+ * @param {GlobalContext} global
+ * @param {LocalContext} local
+ */
+function drawCircleHelp(global, local) {
+  global.ctx.beginPath();
+  global.ctx.fillStyle = hex(nextColor(global, local));
+  const radius = local.length / 2;
+  global.ctx.arc(
+    local.centerX,
+    local.centerY,
+    radius,
+    0,
+    2 * Math.PI,
+  );
+  global.ctx.fill();
   const newLength = floorEvenOrOdd(
-    Math.floor((radius - settings.minSideSize) * Math.SQRT2),
-    drawLength,
+    Math.floor((radius - global.settings.minSideSize) * Math.SQRT2),
+    local.length,
   );
   if (
-    newLength >= settings.minSideSize &&
-    Math.random() > settings.specialNestingProbability.circle
+    newLength >= global.settings.minSideSize &&
+    Math.random() < global.settings.specialNestingProbability.circle
   ) {
-    drawAcc(
-      numOfIter + 1,
-      nextDistanceColor(
-        nextColor,
-        settings.minColorDist,
-        settings.maxColorDist,
-      ),
-      centerX,
-      centerY,
-      newLength,
-      newLength,
-      lastSplits,
-      true,
-      settings,
-    );
+    const newLocal = structuredClone(local);
+    newLocal.color = nextColor(global, local);
+    newLocal.numOfIter++;
+    newLocal.length = newLength;
+    newLocal.height = newLength;
+    newLocal.specialShapePlaceable = true;
+    global.callback(global, newLocal);
   }
 }
+
+/**
+ * @param {GlobalContext} global
+ * @param {LocalContext} local
+ */
+function drawCircle(global, local) {
+  drawSpecial(drawCircleHelp)(global, local);
+}
+
+function circleObject() {
+  return makeShapeObject(
+    isAvailable,
+    (global) => global.settings.squareWeights.circle,
+    drawCircle,
+  );
+}
+
+export { circleObject };

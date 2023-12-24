@@ -41,6 +41,7 @@
 @prop {number} specialNestingProbability.cross
 @prop {Color?} startColor
 @prop {boolean} splitRestrict
+@prop {number} specialIndentProbability
 */
 
 /**
@@ -93,7 +94,7 @@ function defaultSettings() {
     },
     startColor: null,
     splitRestrict: true,
-    // splitRestrict: false,
+    specialIndentProbability: 0.5,
   };
 }
 

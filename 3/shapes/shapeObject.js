@@ -1,5 +1,7 @@
 "use strict";
 
+import { hex, nextColor } from "../colors.js";
+
 /**
 @typedef {Object} Shape
 @prop {ContextFunction} isAvailable
@@ -28,22 +30,63 @@ function isSquare(local) {
   return local.length === local.height;
 }
 
-// function floorEvenOrOdd(n, m) {
-//   if ((n + m) % 2 === 0) {
-//     return n;
-//   }
-//   return n - 1;
-// }
+/**
+ * If n and m are both even or both odd, return n
+ * Else return n-1
+ * M will typically be the original length.
+ * So when you don't know if the centers end with .0 or .5
+ * and you want to know whether n should be even or odd like m,
+ * use this.
+ *
+ * @param {number} n
+ * @param {number} m
+ */
+function floorEvenOrOdd(n, m) {
+  if ((n + m) % 2 === 0) {
+    return n;
+  }
+  return n - 1;
+}
 
-// function indentSpecialFunction(specialFunc) {
-//   return (centerX, centerY) => {
-//     drawRect(centerX, centerY);
-//     drawLength -= 2 * settings.minSideSize;
-//     drawHeight -= 2 * settings.minSideSize;
-//     curColor = nextColor;
-//     nextColor = nextDistanceColor(curColor, settings.minColorDist, settings.maxColorDist);
-//     specialFunc(centerX, centerY);
-//   };
-// }
+/**
+ * @param {GlobalContext} global
+ * @param {LocalContext} local
+ */
+function drawRect(global, local) {
+  global.ctx.fillStyle = hex(local.color);
+  global.ctx.fillRect(
+    local.centerX - local.length / 2,
+    local.centerY - local.height / 2,
+    local.length,
+    local.height,
+  );
+}
 
-export { makeShapeObject, isSquare };
+/**
+@param {ContextFunction} specialFun
+@returns {ContextFunction}
+*/
+function drawSpecial(specialFun) {
+  return (global, local) => {
+    if (local.specialShapePlaceable) {
+      specialFun(global, local);
+    } else {
+      // TODO or indent with indentSpecialFunction maybe
+      drawRect(global, local);
+      if (Math.random() < global.settings.specialIndentProbability) {
+        local.length -= 2 * global.settings.minSideSize;
+        local.height -= 2 * global.settings.minSideSize;
+      }
+      local.color = nextColor(global, local);
+      specialFun(global, local);
+    }
+  };
+}
+
+export {
+  drawSpecial,
+  drawRect,
+  floorEvenOrOdd,
+  makeShapeObject,
+  isSquare,
+};

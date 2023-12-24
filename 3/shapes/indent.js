@@ -1,5 +1,5 @@
-import { hex, nextColor } from "../colors.js";
-import { makeShapeObject } from "./shapeObject.js";
+import { nextColor } from "../colors.js";
+import { drawRect, makeShapeObject } from "./shapeObject.js";
 
 /**
  * @param {GlobalContext} global
@@ -19,13 +19,14 @@ function isAvailable(global, local) {
  * @param {LocalContext} local
  */
 function drawIndent(global, local) {
-  global.ctx.fillStyle = hex(local.color);
-  global.ctx.fillRect(
-    local.centerX - local.length / 2,
-    local.centerY - local.height / 2,
-    local.length,
-    local.height,
-  );
+  drawRect(global, local);
+  // global.ctx.fillStyle = hex(local.color);
+  // global.ctx.fillRect(
+  //   local.centerX - local.length / 2,
+  //   local.centerY - local.height / 2,
+  //   local.length,
+  //   local.height,
+  // );
 
   const newContext = structuredClone(local);
   newContext.numOfIter++;

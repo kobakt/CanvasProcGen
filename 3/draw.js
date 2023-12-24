@@ -22,6 +22,9 @@ shapes.push(indentObject());
 import { blendObject } from "./shapes/blend.js";
 shapes.push(blendObject());
 
+import { circleObject } from "./shapes/circle.js";
+shapes.push(circleObject());
+
 /**
  * @param {Shape[]} shapesToPick
  * @param {GlobalContext} global
