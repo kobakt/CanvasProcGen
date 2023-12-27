@@ -7,9 +7,6 @@
 
 const shapes = [];
 
-// import { blendobject } from "./shapes/blend.js";
-// shapes.push(blendobject());
-
 import { rectObject } from "./shapes/rect.js";
 shapes.push(rectObject());
 
@@ -21,6 +18,9 @@ shapes.push(indentObject());
 
 import { blendObject } from "./shapes/blend.js";
 shapes.push(blendObject());
+
+import { distanceObject } from "./shapes/distanceSquare.js";
+shapes.push(distanceObject());
 
 import { circleObject } from "./shapes/circle.js";
 shapes.push(circleObject());
