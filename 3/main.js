@@ -70,35 +70,36 @@ function draw(settings) {
 
 // Main
 function main() {
-  const globalSettings = defaultSettings();
+  const settings = defaultSettings();
   // Wallpaper
   // [settings.width, settings.height] = [1920, 1080];
   // Wallpaper cut by value testing
   const val = 2;
   // [settings.width, settings.height] = [1920 / val, 1080 / val];
   // settings.minSideSize = settings.width / 192;
-  [globalSettings.width, globalSettings.height] = [
-    2048 / val,
-    1024 / val,
-  ];
-  globalSettings.minSideSize = globalSettings.width / 256;
+  [settings.width, settings.height] = [2048 / val, 1024 / val];
+  settings.minSideSize = settings.width / 256;
   // settings.minSideSize = settings.width / 5;
 
   // Settings tests:
   // settings.startColor = makeColor(80, 80, 80);
   // Min
   // settings.minColorDist = 0;
-  globalSettings.minColorDist = 50;
+  settings.minColorDist = 50;
   // settings.minColorDist = 255;
   // Max
   // settings.maxColorDist = 0;
-  globalSettings.maxColorDist = 50;
+  settings.maxColorDist = 50;
   // settings.maxColorDist = 100;
   // settings.maxColorDist = 255;
   // settings.maxColorDist = 255 * 3;
   // settings.splitRestrict = false;
+  // settings.minIterations.minCrossIter = 0;
+  // settings.specialIndentProbability = 1;
+  // settings.specialNestingProbability.cross = 1;
+  // settings.squareWeights.cross = 10;
 
-  draw(globalSettings);
+  draw(settings);
 
   // IDEA split based on ratio
   // Idea indented and non-indented circle/diamond
