@@ -83,7 +83,26 @@ function drawSpecial(specialFun) {
   };
 }
 
+/**
+ * @param {number} specialMinIter
+ * @returns {ContextFunction}
+ */
+function isAvailableSpecial(specialMinIter, minSideMultiple) {
+  return (global, local) => {
+    const specialOffset = local.specialShapePlaceable
+      ? 0
+      : 2 * global.settings.minSideSize;
+    return (
+      isSquare(local) &&
+      local.numOfIter >= specialMinIter &&
+      local.length >=
+        global.settings.minSideSize * minSideMultiple + specialOffset
+    );
+  };
+}
+
 export {
+  isAvailableSpecial,
   drawSpecial,
   drawRect,
   floorEvenOrOdd,
