@@ -24,7 +24,7 @@ import {
 function isAvailable(global, local) {
   return isAvailableSpecial(
     global.settings.minIterations.minCrossIter,
-    4,
+    4, //TODO test 3 here, and if 3 is okay, then just get rid of this parameter
   )(global, local);
 }
 

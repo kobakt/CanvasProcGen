@@ -28,6 +28,9 @@ shapes.push(circleObject());
 import { crossObject } from "./shapes/cross.js";
 shapes.push(crossObject());
 
+import { diamondObject } from "./shapes/diamond.js";
+shapes.push(diamondObject());
+
 /**
  * @param {Shape[]} shapesToPick
  * @param {GlobalContext} global
