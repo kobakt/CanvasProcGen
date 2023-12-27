@@ -2,7 +2,7 @@
 
 import { makeShapeObject } from "./shapeObject.js";
 import { nextColor } from "../colors.js";
-import { splitFactors } from "./splitFactors.js";
+import { findFactors, splitFactors } from "./splitFactors.js";
 
 /**
  * @param {GlobalContext} global

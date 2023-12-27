@@ -1,9 +1,8 @@
 import { hex, nextColor } from "../colors.js";
 import {
-  drawRect,
   drawSpecial,
   floorEvenOrOdd,
-  isSquare,
+  isAvailableSpecial,
   makeShapeObject,
 } from "./shapeObject.js";
 
@@ -12,14 +11,18 @@ import {
  * @param {LocalContext} local
  */
 function isAvailable(global, local) {
-  const specialOffset = local.specialShapePlaceable
-    ? 0
-    : 2 * global.settings.minSideSize;
-  return (
-    isSquare(local) &&
-    local.numOfIter >= global.settings.minIterations.minCircleIter &&
-    local.length >= global.settings.minSideSize * 3 + specialOffset
-  );
+  return isAvailableSpecial(
+    global.settings.minIterations.minCircleIter,
+    3,
+  )(global, local);
+  // const specialOffset = local.specialShapePlaceable
+  //   ? 0
+  //   : 2 * global.settings.minSideSize;
+  // return (
+  //   isSquare(local) &&
+  //   local.numOfIter >= global.settings.minIterations.minCircleIter &&
+  //   local.length >= global.settings.minSideSize * 3 + specialOffset
+  // );
 }
 
 /**

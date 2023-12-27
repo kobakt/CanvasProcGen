@@ -25,6 +25,9 @@ shapes.push(blendObject());
 import { circleObject } from "./shapes/circle.js";
 shapes.push(circleObject());
 
+import { crossObject } from "./shapes/cross.js";
+shapes.push(crossObject());
+
 /**
  * @param {Shape[]} shapesToPick
  * @param {GlobalContext} global

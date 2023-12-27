@@ -64,12 +64,12 @@ function defaultSettings() {
     maxSplitAmount: 5,
     minIterations: {
       minIndentIter: 4,
-      minOppositesSquareIter: 5,
+      minOppositesSquareIter: 4,
       minBlendSquareIter: 4,
-      minDistanceSquareIter: 5,
-      minCircleIter: 5,
-      minDiamondIter: 5,
-      minCrossIter: 5,
+      minDistanceSquareIter: 4,
+      minCircleIter: 4,
+      minDiamondIter: 4,
+      minCrossIter: 4,
     },
     rectWeights: {
       drawRect: 1,
