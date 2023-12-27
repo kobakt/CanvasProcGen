@@ -22,6 +22,9 @@ shapes.push(blendObject());
 import { distanceObject } from "./shapes/distanceSquare.js";
 shapes.push(distanceObject());
 
+import { oppositesObject } from "./shapes/oppositesSquare.js";
+shapes.push(oppositesObject());
+
 import { circleObject } from "./shapes/circle.js";
 shapes.push(circleObject());
 
