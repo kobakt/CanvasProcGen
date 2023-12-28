@@ -1,0 +1,28 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Generate</title>
+    <link rel="shortcut icon" href="files/favicon.ico" />
+    <style>
+      .sidenav {
+        width: 160px; /* Set the width of the sidebar */
+        position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+        z-index: 1; /* Stay on top */
+        top: 0; /* Stay at the top */
+        right: 0;
+        background-color: #111; /* Black */
+        overflow-x: hidden; /* Disable horizontal scroll */
+        padding-top: 20px;
+      }
+    </style>
+  </head>
+  <body style="margin: 0px">
+    <canvas id="canvas"></canvas>
+    <script type="module" src="files/main.js"></script>
+    <div id="sidebar" class="sidenav">
+      <button id="generate">Generate</button>
+    </div>
+  </body>
+</html>

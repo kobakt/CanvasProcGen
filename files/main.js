@@ -104,4 +104,20 @@ function main() {
   // IDEA split based on ratio
   // Idea indented and non-indented circle/diamond
 }
+// const btn = document.querySelector("#Generate");
+const btn = document.getElementById("generate");
+
+btn.addEventListener("click", () => {
+  main();
+});
 main();
+
+Object.keys(defaultSettings()).forEach((name) => {
+  const elem = document.createElement("button");
+  elem.appendChild(document.createTextNode(name));
+  elem.addEventListener("click", () => {
+    elem.appendChild(document.createTextNode(name));
+  });
+  const sidebar = document.getElementById("sidebar");
+  sidebar.appendChild(elem);
+});
