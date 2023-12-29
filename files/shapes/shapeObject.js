@@ -64,7 +64,7 @@ function drawRect(global, local) {
 
 /**
  * @param {ContextFunction} specialFun
- * @param {number} [nestingProb]
+ * @param {number} nestingProb
  * @returns {ContextFunction}
  */
 function drawSpecial(specialFun, nestingProb) {
