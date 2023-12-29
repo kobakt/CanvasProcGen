@@ -64,16 +64,16 @@ function drawRect(global, local) {
 
 /**
  * @param {ContextFunction} specialFun
- * @param {number} nestingProb
+ * @param {ContextFunction} nestingIndentProbFunc
  * @returns {ContextFunction}
  */
-function drawSpecial(specialFun, nestingProb) {
+function drawSpecial(specialFun, nestingIndentProbFunc) {
   return (global, local) => {
     if (local.specialShapePlaceable) {
       specialFun(global, local);
     } else {
       drawRect(global, local);
-      if (Math.random() < nestingProb) {
+      if (Math.random() < nestingIndentProbFunc(global, local)) {
         local.length -= 2 * global.settings2.minSideSize.val;
         local.height -= 2 * global.settings2.minSideSize.val;
       }
