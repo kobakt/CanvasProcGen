@@ -6,7 +6,7 @@ import {
   defaultSettings,
   defaultSettings2,
 } from "./settings.js";
-import { randomColor } from "./colors.js";
+import { makeHexColor, randomColor } from "./colors.js";
 import { drawRec } from "./draw.js";
 import { addElemsRec } from "./sidebar.js";
 /**
@@ -33,14 +33,21 @@ function draw(settings) {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
 
-  if (settings === null || settings === undefined) {
-    settings = defaultSettings();
-  }
-  [canvas.width, canvas.height] = [settings.width, settings.height];
+  // if (settings === null || settings === undefined) {
+  //   settings = defaultSettings();
+  // }
+  // [canvas.width, canvas.height] = [settings.width, settings.height];
+  [canvas.width, canvas.height] = [
+    tempSettings.width.val,
+    tempSettings.height.val,
+  ];
 
-  let startColor = settings.startColor
-    ? settings.startColor
-    : randStartColor();
+  // let startColor = settings.startColor
+  //   ? settings.startColor
+  //   : randStartColor();
+  let startColor = tempSettings.color.randomColor.val
+    ? randStartColor()
+    : makeHexColor(tempSettings.color.startColor.val);
 
   /**
   @type {GlobalContext} global
@@ -51,15 +58,20 @@ function draw(settings) {
     // stack oveflow.
     callback: drawRec,
     ctx: ctx,
+    settings2: tempSettings,
   };
   /**
   @type {LocalContext} local
   */
   let local = {
-    length: settings.width,
-    height: settings.height,
-    centerX: settings.width / 2,
-    centerY: settings.height / 2,
+    // length: settings.width,
+    // height: settings.height,
+    // centerX: settings.width / 2,
+    // centerY: settings.height / 2,
+    length: tempSettings.width.val,
+    height: tempSettings.height.val,
+    centerX: tempSettings.width.val / 2,
+    centerY: tempSettings.height.val / 2,
     color: startColor,
     numOfIter: 0,
     split: {
@@ -109,13 +121,17 @@ function main() {
   // IDEA split based on ratio
   // Idea indented and non-indented circle/diamond
 }
-// const btn = document.querySelector("#Generate");
-const btn = document.getElementById("generate");
 
+//TODO find right place for this
+// probably add both of these to main
+// and change main call in event listener to draw
+// or a new generate function
+// sucht that main only runs once.
+const tempSettings = defaultSettings2();
+addElemsRec(tempSettings, "settings");
+
+const btn = document.getElementById("generate");
 btn.addEventListener("click", () => {
   main();
 });
 main();
-
-const tempSettings = defaultSettings2();
-addElemsRec(tempSettings, "settings");

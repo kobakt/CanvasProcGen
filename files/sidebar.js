@@ -20,6 +20,7 @@ function getInputValue(setting, input) {
       return input.checked;
     case FormType.Number:
     case FormType.Slider:
+      return Number.parseFloat(input.value);
     case FormType.Color:
     default:
       return input.value;
@@ -59,8 +60,8 @@ function setInputValue(setting, input, value, min, max) {
  */
 function changeEventFunction(setting, name, label, input) {
   return () => {
-    setLabelText(setting, name, label, getInputValue(setting, input));
     setting.val = getInputValue(setting, input);
+    setLabelText(setting, name, label, setting.val);
   };
 }
 
