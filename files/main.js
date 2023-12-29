@@ -1,7 +1,11 @@
 "use strict";
 // alert("main.js");
 
-import { defaultSettings } from "./settings.js";
+import {
+  FormType,
+  defaultSettings,
+  defaultSettings2,
+} from "./settings.js";
 import { randomColor } from "./colors.js";
 import { drawRec } from "./draw.js";
 /**
@@ -112,12 +116,34 @@ btn.addEventListener("click", () => {
 });
 main();
 
-Object.keys(defaultSettings()).forEach((name) => {
-  const elem = document.createElement("button");
-  elem.appendChild(document.createTextNode(name));
-  elem.addEventListener("click", () => {
-    elem.appendChild(document.createTextNode(name));
-  });
-  const sidebar = document.getElementById("sidebar");
-  sidebar.appendChild(elem);
-});
+const tempSettings = defaultSettings2();
+//TODO input type="reset"
+// TODO <fieldset> and <legend>
+/**
+ * @param {import("./settings.js").Setting<any>} object
+ * @param {string} name
+ */
+function addElemsRec(object, name) {
+  if (object.val !== undefined) {
+    const div = document.createElement("div");
+    const label = document.createElement("label");
+    label.appendChild(document.createTextNode(name));
+    div.appendChild(label);
+    const input = document.createElement("input");
+    div.appendChild(input);
+    input.type = object.formType;
+    input.addEventListener("click", () => {
+      alert(name + " " + object.val);
+    });
+    const sidebar = document.getElementById("sidebar");
+    sidebar.appendChild(div);
+  } else {
+    // alert(JSON.stringify(Object.keys(object)));
+    Object.keys(object)
+      .filter((name) => object[name] !== undefined)
+      .forEach((key) => {
+        addElemsRec(object[key], name + "." + key);
+      });
+  }
+}
+addElemsRec(tempSettings, "settings");
