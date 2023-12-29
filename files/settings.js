@@ -66,21 +66,21 @@ function makeShapeObjectSettings(
     weight: makeSetting(
       1,
       "How likely this shape will show up if available.",
-      FormType.Slider,
+      FormType.Number,
       0,
       Infinity,
     ),
     minIter: makeSetting(
       minIter,
       "How many splits/nestings need to happen before this shape can appear.",
-      FormType.Slider,
+      FormType.Number,
       0,
       Infinity,
     ),
     maxIter: makeSetting(
       maxIter,
       "How many splits/nestings need to happen before this shape can no longer appear.",
-      FormType.Slider,
+      FormType.Number,
       0,
       Infinity,
     ),
@@ -103,7 +103,8 @@ function makeShapeObjectSettings(
 
 /**
 @typedef {object} ColorSettings
-@prop {Setting<Color?>} startColor
+@prop {Setting<boolean>} randomColor
+@prop {Setting<string>} startColor
 @prop {Setting<number>} minDist
 @prop {Setting<number>} maxDist
 */
@@ -148,21 +149,21 @@ function defaultSettings2() {
     width: makeSetting(
       1200,
       "Width of the canvas.",
-      FormType.Slider,
+      FormType.Number,
       0,
       Infinity,
     ),
     height: makeSetting(
       600,
       "Height of the canvas.",
-      FormType.Slider,
+      FormType.Number,
       0,
       Infinity,
     ),
     minSideSize: makeSetting(
       4,
       "The smallest a shape can be.",
-      FormType.Slider,
+      FormType.Number,
       0,
       Infinity,
     ),
@@ -179,7 +180,18 @@ function defaultSettings2() {
       heightMax: makeSetting(0.15, "", FormType.Slider, 0, 1),
     },
     color: {
-      startColor: makeSetting(null, "", FormType.Color, 0, 255 * 3), //TODO lol
+      randomColor: makeSetting(
+        true,
+        "Use a random starting color. Otherwise use set color.",
+        FormType.CheckBox,
+      ),
+      startColor: makeSetting(
+        null,
+        "Starting color.",
+        FormType.Color,
+        0,
+        255 * 3,
+      ), //TODO lol
       minDist: makeSetting(
         255,
         "The minimum amount of change when picking a new color.",
