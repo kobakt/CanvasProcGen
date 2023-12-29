@@ -63,19 +63,19 @@ function drawRect(global, local) {
 }
 
 /**
-@param {ContextFunction} specialFun
-@returns {ContextFunction}
-*/
-function drawSpecial(specialFun) {
+ * @param {ContextFunction} specialFun
+ * @param {number} [nestingProb]
+ * @returns {ContextFunction}
+ */
+function drawSpecial(specialFun, nestingProb) {
   return (global, local) => {
     if (local.specialShapePlaceable) {
       specialFun(global, local);
     } else {
-      // TODO or indent with indentSpecialFunction maybe
       drawRect(global, local);
-      if (Math.random() < global.settings.specialIndentProbability) {
-        local.length -= 2 * global.settings.minSideSize;
-        local.height -= 2 * global.settings.minSideSize;
+      if (Math.random() < nestingProb) {
+        local.length -= 2 * global.settings2.minSideSize.val;
+        local.height -= 2 * global.settings2.minSideSize.val;
       }
       local.color = nextColor(global, local);
       specialFun(global, local);
@@ -91,7 +91,7 @@ function isAvailableSpecial(specialMinIter, minSideMultiple) {
   return (global, local) => {
     const specialOffset = local.specialShapePlaceable
       ? 0
-      : 2 * global.settings.minSideSize;
+      : 2 * global.settings2.minSideSize.val;
     return (
       isSquare(local) &&
       local.numOfIter >= specialMinIter &&
