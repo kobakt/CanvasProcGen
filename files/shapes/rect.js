@@ -5,15 +5,16 @@ import { drawRect, makeShapeObject } from "./shapeObject.js";
  * @param {LocalContext} local
  */
 function isAvailable(global, local) {
-  let drawRatios = global.settings.drawRatios;
+  let drawRatios = global.settings2.ratios;
   return (
     local.length >=
-      drawRatios.minLengthRatio * global.settings.width &&
+      drawRatios.lengthMin.val * global.settings2.width.val &&
     local.length <=
-      drawRatios.maxLengthRatio * global.settings.width &&
+      drawRatios.lengthMax.val * global.settings2.width.val &&
     local.height >=
-      drawRatios.minHeightRatio * global.settings.height &&
-    local.height <= drawRatios.maxHeightRatio * global.settings.height
+      drawRatios.heightMin.val * global.settings2.height.val &&
+    local.height <=
+      drawRatios.heightMax.val * global.settings2.height.val
   );
 }
 
@@ -21,7 +22,7 @@ function rectObject() {
   // also separate square weight to possibly look at
   return makeShapeObject(
     isAvailable,
-    (global) => global.settings.rectWeights.drawRect,
+    (global) => global.settings2.shapes.rect.weight,
     drawRect,
   );
 }
