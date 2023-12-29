@@ -90,7 +90,7 @@ function addSetting(setting, name) {
   const eventFunc = changeEventFunction(setting, name, label, input);
   eventFunc();
   input.addEventListener("change", eventFunc);
-  const sidebar = document.getElementById("sidebar");
+  const sidebar = document.getElementById("settings");
   sidebar.appendChild(div);
 }
 
