@@ -189,18 +189,16 @@ function defaultSettings() {
         null,
         "Starting color.",
         FormType.Color,
-        0,
-        255 * 3,
-      ), //TODO lol
+      ),
       minDist: makeSetting(
-        255,
+        50,
         "The minimum amount of change when picking a new color.",
         FormType.Slider,
         0,
         255 * 3,
       ),
       maxDist: makeSetting(
-        255 * 3,
+        150,
         "The maximum amount of change when picking a new color.",
         FormType.Slider,
         0,

@@ -13,7 +13,6 @@ import {
 function isAvailable(global, local) {
   return isAvailableSpecial(
     global.settings.shapes.diamond.minIter.val,
-    3,
   )(global, local);
 }
 

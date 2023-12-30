@@ -11,10 +11,10 @@ import {
  * @param {LocalContext} local
  */
 function isAvailable(global, local) {
-  return isAvailableSpecial(
-    global.settings.shapes.cross.minIter.val,
-    4, //TODO test 3 here, and if 3 is okay, then just get rid of this parameter
-  )(global, local);
+  return isAvailableSpecial(global.settings.shapes.cross.minIter.val)(
+    global,
+    local,
+  );
 }
 
 /**

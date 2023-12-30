@@ -131,7 +131,6 @@ function drawSplit(global, local) {
 
   const offsetObj = findOffset(local, byLength, numOfSplits);
 
-  //TODO maybe consider not starting with this?
   let iterColor = local.color;
   for (let i = 0; i < numOfSplits; i++) {
     iterColor = nextColor(global, local);

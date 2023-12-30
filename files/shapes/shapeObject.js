@@ -87,7 +87,7 @@ function drawSpecial(specialFun, nestingIndentProbFunc) {
  * @param {number} specialMinIter
  * @returns {ContextFunction}
  */
-function isAvailableSpecial(specialMinIter, minSideMultiple) {
+function isAvailableSpecial(specialMinIter) {
   return (global, local) => {
     const specialOffset = local.specialShapePlaceable
       ? 0
@@ -96,8 +96,7 @@ function isAvailableSpecial(specialMinIter, minSideMultiple) {
       isSquare(local) &&
       local.numOfIter >= specialMinIter &&
       local.length >=
-        global.settings.minSideSize.val * minSideMultiple +
-          specialOffset
+        global.settings.minSideSize.val * 3 + specialOffset
     );
   };
 }

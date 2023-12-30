@@ -2,3 +2,8 @@
 -change callback to add to queue to reduce nested recursive calls
 -Add alternating/repeated indent shape class
 	-Will be generalization of opposities, distance, and blend
+-On sidebar, tie range with number https://stackoverflow.com/questions/44182411/range-slider-with-direct-number-input
+-On sidebar, add reset button (input type="reset")
+-On sidebar, add <fieldset> and <legend> to have nested option names.
+-Maybe make splitFactors memoized as well or instead of allFactors.
+-Investigate better structure for SplitContext

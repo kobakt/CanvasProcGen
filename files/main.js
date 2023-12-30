@@ -28,6 +28,7 @@ function draw(settings) {
   // @ts-ignore
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
+  // ctx.translate(0.5, 0.5);
 
   if (settings === null || settings === undefined) {
     settings = defaultSettings();
@@ -45,8 +46,6 @@ function draw(settings) {
   @type {GlobalContext} global
   */
   let global = {
-    // TODO: Probably change to like a queue to prevent
-    // stack oveflow.
     callback: drawRec,
     ctx: ctx,
     settings: settings,

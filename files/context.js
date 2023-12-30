@@ -4,7 +4,6 @@
 */
 
 /**
-//TODO is this best?
 // if prop missing, then assumed not set
 // else just use bool
 @typedef SplitContext
@@ -16,7 +15,7 @@
 Used and not modified for all calls
 @typedef GlobalContext 
 @prop {Settings} settings
-@prop {function} callback //TODO define function
+@prop {ContextFunction} callback
 @prop {CanvasRenderingContext2D} ctx
 */
 
