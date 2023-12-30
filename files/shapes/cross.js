@@ -12,7 +12,7 @@ import {
  */
 function isAvailable(global, local) {
   return isAvailableSpecial(
-    global.settings2.shapes.cross.minIter.val,
+    global.settings.shapes.cross.minIter.val,
     4, //TODO test 3 here, and if 3 is okay, then just get rid of this parameter
   )(global, local);
 }
@@ -57,15 +57,13 @@ function drawCrossHelp(global, local) {
 
   const newLength = floorEvenOrOdd(
     Math.floor(
-      local.length -
-        2 * offset -
-        2 * global.settings2.minSideSize.val,
+      local.length - 2 * offset - 2 * global.settings.minSideSize.val,
     ),
     local.length,
   );
   if (
-    newLength >= global.settings2.minSideSize.val &&
-    Math.random() < global.settings2.shapes.cross.nestingProb.val
+    newLength >= global.settings.minSideSize.val &&
+    Math.random() < global.settings.shapes.cross.nestingProb.val
   ) {
     const newLocal = structuredClone(local);
     newLocal.numOfIter++;
@@ -80,10 +78,10 @@ function drawCrossHelp(global, local) {
 function crossObject() {
   return makeShapeObject(
     isAvailable,
-    (global) => global.settings2.shapes.cross.weight.val,
+    (global) => global.settings.shapes.cross.weight.val,
     drawSpecial(
       drawCrossHelp,
-      (global) => global.settings2.shapes.cross.nestingIndentProb.val,
+      (global) => global.settings.shapes.cross.nestingIndentProb.val,
     ),
   );
 }

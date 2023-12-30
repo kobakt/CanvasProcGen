@@ -12,7 +12,7 @@ import {
  */
 function isAvailable(global, local) {
   return isAvailableSpecial(
-    global.settings2.shapes.circle.minIter.val,
+    global.settings.shapes.circle.minIter.val,
     3,
   )(global, local);
 }
@@ -35,13 +35,13 @@ function drawCircleHelp(global, local) {
   global.ctx.fill();
   const newLength = floorEvenOrOdd(
     Math.floor(
-      (radius - global.settings2.minSideSize.val) * Math.SQRT2,
+      (radius - global.settings.minSideSize.val) * Math.SQRT2,
     ),
     local.length,
   );
   if (
-    newLength >= global.settings2.minSideSize.val &&
-    Math.random() < global.settings2.shapes.circle.nestingProb.val
+    newLength >= global.settings.minSideSize.val &&
+    Math.random() < global.settings.shapes.circle.nestingProb.val
   ) {
     const newLocal = structuredClone(local);
     newLocal.color = nextColor(global, local);
@@ -56,11 +56,10 @@ function drawCircleHelp(global, local) {
 function circleObject() {
   return makeShapeObject(
     isAvailable,
-    (global) => global.settings2.shapes.circle.weight.val,
+    (global) => global.settings.shapes.circle.weight.val,
     drawSpecial(
       drawCircleHelp,
-      (global) =>
-        global.settings2.shapes.circle.nestingIndentProb.val,
+      (global) => global.settings.shapes.circle.nestingIndentProb.val,
     ),
   );
 }

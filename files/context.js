@@ -18,7 +18,6 @@ Used and not modified for all calls
 @prop {Settings} settings
 @prop {function} callback //TODO define function
 @prop {CanvasRenderingContext2D} ctx
-@prop {import("./settings.js").Settings2} settings2
 */
 
 /*

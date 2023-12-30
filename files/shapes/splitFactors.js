@@ -34,8 +34,8 @@ export function splitFactors(sideLength, global) {
   // return savedFactors[sideLength].filter(
   return allFactors(sideLength).filter(
     (factor) =>
-      sideLength / factor >= global.settings2.minSideSize.val &&
-      factor <= global.settings2.shapes.split.maxIter.val,
+      sideLength / factor >= global.settings.minSideSize.val &&
+      factor <= global.settings.shapes.split.maxIter.val,
   );
 }
 

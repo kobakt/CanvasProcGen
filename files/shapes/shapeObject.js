@@ -74,8 +74,8 @@ function drawSpecial(specialFun, nestingIndentProbFunc) {
     } else {
       drawRect(global, local);
       if (Math.random() < nestingIndentProbFunc(global, local)) {
-        local.length -= 2 * global.settings2.minSideSize.val;
-        local.height -= 2 * global.settings2.minSideSize.val;
+        local.length -= 2 * global.settings.minSideSize.val;
+        local.height -= 2 * global.settings.minSideSize.val;
       }
       local.color = nextColor(global, local);
       specialFun(global, local);
@@ -91,12 +91,13 @@ function isAvailableSpecial(specialMinIter, minSideMultiple) {
   return (global, local) => {
     const specialOffset = local.specialShapePlaceable
       ? 0
-      : 2 * global.settings2.minSideSize.val;
+      : 2 * global.settings.minSideSize.val;
     return (
       isSquare(local) &&
       local.numOfIter >= specialMinIter &&
       local.length >=
-        global.settings.minSideSize * minSideMultiple + specialOffset
+        global.settings.minSideSize.val * minSideMultiple +
+          specialOffset
     );
   };
 }

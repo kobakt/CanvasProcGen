@@ -12,8 +12,8 @@ import {
 function isAvailable(global, local) {
   return (
     isSquare(local) &&
-    local.numOfIter >= global.settings2.shapes.distance.minIter.val &&
-    local.length > global.settings2.minSideSize.val * 3
+    local.numOfIter >= global.settings.shapes.distance.minIter.val &&
+    local.length > global.settings.minSideSize.val * 3
   );
 }
 
@@ -22,7 +22,7 @@ function isAvailable(global, local) {
  * @param {LocalContext} local
  */
 function drawDistance(global, local) {
-  while (local.length >= global.settings2.minSideSize.val) {
+  while (local.length >= global.settings.minSideSize.val) {
     global.ctx.fillStyle = hex(local.color);
     global.ctx.fillRect(
       Math.round(local.centerX - local.length / 2),
@@ -31,14 +31,14 @@ function drawDistance(global, local) {
       local.length,
     );
     local.color = nextColor(global, local);
-    local.length -= global.settings2.minSideSize.val * 2;
+    local.length -= global.settings.minSideSize.val * 2;
   }
 }
 
 function distanceObject() {
   return makeShapeObject(
     isAvailable,
-    (global) => global.settings2.shapes.distance.weight.val,
+    (global) => global.settings.shapes.distance.weight.val,
     drawDistance,
   );
 }

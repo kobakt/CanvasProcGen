@@ -12,8 +12,7 @@ import { findFactors, splitFactors } from "./splitFactors.js";
  */
 function isAvailableHelp(global, lastBool, curVal, otherVal) {
   return (
-    // (!global.settings.splitRestrict ||
-    (!global.settings2.splitRestrict.val ||
+    (!global.settings.splitRestrict.val ||
       !lastBool ||
       splitFactors(otherVal, global).length === 0) &&
     splitFactors(curVal, global).length > 0
@@ -152,8 +151,7 @@ function drawSplit(global, local) {
 function splitObject() {
   return makeShapeObject(
     isAvailable,
-    // (global) => global.settings.rectWeights.split,
-    (global) => global.settings2.shapes.split.weight.val,
+    (global) => global.settings.shapes.split.weight.val,
     drawSplit,
   );
 }

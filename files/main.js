@@ -1,11 +1,7 @@
 "use strict";
 // alert("main.js");
 
-import {
-  FormType,
-  defaultSettings,
-  defaultSettings2,
-} from "./settings.js";
+import { defaultSettings } from "./settings.js";
 import { makeHexColor, randomColor } from "./colors.js";
 import { drawRec } from "./draw.js";
 import { addElemsRec } from "./sidebar.js";
@@ -33,45 +29,36 @@ function draw(settings) {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
 
-  // if (settings === null || settings === undefined) {
-  //   settings = defaultSettings();
-  // }
-  // [canvas.width, canvas.height] = [settings.width, settings.height];
+  if (settings === null || settings === undefined) {
+    settings = defaultSettings();
+  }
   [canvas.width, canvas.height] = [
-    tempSettings.width.val,
-    tempSettings.height.val,
+    settings.width.val,
+    settings.height.val,
   ];
 
-  // let startColor = settings.startColor
-  //   ? settings.startColor
-  //   : randStartColor();
-  let startColor = tempSettings.color.randomColor.val
+  let startColor = settings.color.randomColor.val
     ? randStartColor()
-    : makeHexColor(tempSettings.color.startColor.val);
+    : makeHexColor(settings.color.startColor.val);
 
   /**
   @type {GlobalContext} global
   */
   let global = {
-    settings,
     // TODO: Probably change to like a queue to prevent
     // stack oveflow.
     callback: drawRec,
     ctx: ctx,
-    settings2: tempSettings,
+    settings: settings,
   };
   /**
   @type {LocalContext} local
   */
   let local = {
-    // length: settings.width,
-    // height: settings.height,
-    // centerX: settings.width / 2,
-    // centerY: settings.height / 2,
-    length: tempSettings.width.val,
-    height: tempSettings.height.val,
-    centerX: tempSettings.width.val / 2,
-    centerY: tempSettings.height.val / 2,
+    length: settings.width.val,
+    height: settings.height.val,
+    centerX: settings.width.val / 2,
+    centerY: settings.height.val / 2,
     color: startColor,
     numOfIter: 0,
     split: {
@@ -88,25 +75,26 @@ function draw(settings) {
 // Main
 function main() {
   const settings = defaultSettings();
+  addElemsRec(settings, "settings");
   // Wallpaper
   // [settings.width, settings.height] = [1920, 1080];
   // Wallpaper cut by value testing
-  const val = 2;
+  // const val = 2;
   // [settings.width, settings.height] = [1920 / val, 1080 / val];
   // settings.minSideSize = settings.width / 192;
-  [settings.width, settings.height] = [2048 / val, 1024 / val];
-  settings.minSideSize = settings.width / 256;
+  // [settings.width, settings.height] = [2048 / val, 1024 / val];
+  // settings.minSideSize = settings.width / 256;
   // settings.minSideSize = settings.width / 5;
 
   // Settings tests:
   // settings.startColor = makeColor(80, 80, 80);
   // Min
   // settings.minColorDist = 0;
-  settings.minColorDist = 50;
+  // settings.minColorDist = 50;
   // settings.minColorDist = 255;
   // Max
   // settings.maxColorDist = 0;
-  settings.maxColorDist = 50;
+  // settings.maxColorDist = 50;
   // settings.maxColorDist = 100;
   // settings.maxColorDist = 255;
   // settings.maxColorDist = 255 * 3;
@@ -116,22 +104,10 @@ function main() {
   // settings.specialNestingProbability.cross = 1;
   // settings.squareWeights.cross = 10;
 
+  const btn = document.getElementById("generate");
+  btn.addEventListener("click", () => {
+    draw(settings);
+  });
   draw(settings);
-
-  // IDEA split based on ratio
-  // Idea indented and non-indented circle/diamond
 }
-
-//TODO find right place for this
-// probably add both of these to main
-// and change main call in event listener to draw
-// or a new generate function
-// sucht that main only runs once.
-const tempSettings = defaultSettings2();
-addElemsRec(tempSettings, "settings");
-
-const btn = document.getElementById("generate");
-btn.addEventListener("click", () => {
-  main();
-});
 main();

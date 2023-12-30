@@ -8,9 +8,8 @@ import { isSquare, makeShapeObject } from "./shapeObject.js";
 function isAvailable(global, local) {
   return (
     isSquare(local) &&
-    local.numOfIter >=
-      global.settings2.shapes.opposites.minIter.val &&
-    local.length >= global.settings2.minSideSize.val * 3
+    local.numOfIter >= global.settings.shapes.opposites.minIter.val &&
+    local.length >= global.settings.minSideSize.val * 3
   );
 }
 
@@ -20,7 +19,7 @@ function isAvailable(global, local) {
  */
 function drawOpposites(global, local) {
   let otherColor = nextColor(global, local);
-  while (local.length >= global.settings2.minSideSize.val) {
+  while (local.length >= global.settings.minSideSize.val) {
     global.ctx.fillStyle = hex(local.color);
     global.ctx.fillRect(
       Math.floor(local.centerX - local.length / 2),
@@ -29,14 +28,14 @@ function drawOpposites(global, local) {
       local.length,
     );
     [local.color, otherColor] = [otherColor, local.color];
-    local.length -= global.settings2.minSideSize.val * 2;
+    local.length -= global.settings.minSideSize.val * 2;
   }
 }
 
 function oppositesObject() {
   return makeShapeObject(
     isAvailable,
-    (global) => global.settings2.shapes.opposites.weight.val,
+    (global) => global.settings.shapes.opposites.weight.val,
     drawOpposites,
   );
 }
