@@ -22,7 +22,7 @@ function rectObject() {
   // also separate square weight to possibly look at
   return makeShapeObject(
     isAvailable,
-    (global) => global.settings2.shapes.rect.weight,
+    (global) => global.settings2.shapes.rect.weight.val,
     drawRect,
   );
 }

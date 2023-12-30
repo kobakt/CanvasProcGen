@@ -12,7 +12,7 @@ import {
  */
 function isAvailable(global, local) {
   return isAvailableSpecial(
-    global.settings.minIterations.minDiamondIter,
+    global.settings2.shapes.diamond.minIter.val,
     3,
   )(global, local);
 }
@@ -33,14 +33,15 @@ function drawDiamondHelp(global, local) {
 
   const newLength = floorEvenOrOdd(
     Math.floor(
-      local.length / 2 - Math.SQRT2 * global.settings.minSideSize,
+      local.length / 2 -
+        Math.SQRT2 * global.settings2.minSideSize.val,
     ),
     local.length,
   );
 
   if (
-    newLength >= global.settings.minSideSize &&
-    Math.random() < global.settings.specialNestingProbability.diamond
+    newLength >= global.settings2.minSideSize.val &&
+    Math.random() < global.settings2.shapes.diamond.nestingProb.val
   ) {
     const newLocal = structuredClone(local);
     newLocal.numOfIter++;
@@ -56,8 +57,12 @@ function drawDiamondHelp(global, local) {
 function diamondObject() {
   return makeShapeObject(
     isAvailable,
-    (global) => global.settings.squareWeights.diamond,
-    drawSpecial(drawDiamondHelp),
+    (global) => global.settings2.shapes.diamond.weight.val,
+    drawSpecial(
+      drawDiamondHelp,
+      (global) =>
+        global.settings2.shapes.diamond.nestingIndentProb.val,
+    ),
   );
 }
 

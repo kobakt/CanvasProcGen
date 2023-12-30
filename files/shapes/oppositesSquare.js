@@ -36,7 +36,7 @@ function drawOpposites(global, local) {
 function oppositesObject() {
   return makeShapeObject(
     isAvailable,
-    (global) => global.settings2.shapes.opposites.weight,
+    (global) => global.settings2.shapes.opposites.weight.val,
     drawOpposites,
   );
 }

@@ -170,8 +170,8 @@ function nextDistanceColor(color, minD, maxD) {
 function nextColor(global, local) {
   return nextDistanceColor(
     local.color,
-    global.settings.minColorDist,
-    global.settings.maxColorDist,
+    global.settings2.color.minDist.val,
+    global.settings2.color.maxDist.val,
   );
 }
 

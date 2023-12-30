@@ -12,17 +12,9 @@ import {
  */
 function isAvailable(global, local) {
   return isAvailableSpecial(
-    global.settings.minIterations.minCircleIter,
+    global.settings2.shapes.circle.minIter.val,
     3,
   )(global, local);
-  // const specialOffset = local.specialShapePlaceable
-  //   ? 0
-  //   : 2 * global.settings.minSideSize;
-  // return (
-  //   isSquare(local) &&
-  //   local.numOfIter >= global.settings.minIterations.minCircleIter &&
-  //   local.length >= global.settings.minSideSize * 3 + specialOffset
-  // );
 }
 
 /**
@@ -42,12 +34,14 @@ function drawCircleHelp(global, local) {
   );
   global.ctx.fill();
   const newLength = floorEvenOrOdd(
-    Math.floor((radius - global.settings.minSideSize) * Math.SQRT2),
+    Math.floor(
+      (radius - global.settings2.minSideSize.val) * Math.SQRT2,
+    ),
     local.length,
   );
   if (
-    newLength >= global.settings.minSideSize &&
-    Math.random() < global.settings.specialNestingProbability.circle
+    newLength >= global.settings2.minSideSize.val &&
+    Math.random() < global.settings2.shapes.circle.nestingProb.val
   ) {
     const newLocal = structuredClone(local);
     newLocal.color = nextColor(global, local);
@@ -59,19 +53,15 @@ function drawCircleHelp(global, local) {
   }
 }
 
-/**
- * @param {GlobalContext} global
- * @param {LocalContext} local
- */
-function drawCircle(global, local) {
-  drawSpecial(drawCircleHelp)(global, local);
-}
-
 function circleObject() {
   return makeShapeObject(
     isAvailable,
-    (global) => global.settings.squareWeights.circle,
-    drawCircle,
+    (global) => global.settings2.shapes.circle.weight.val,
+    drawSpecial(
+      drawCircleHelp,
+      (global) =>
+        global.settings2.shapes.circle.nestingIndentProb.val,
+    ),
   );
 }
 

@@ -1,1 +1,4 @@
 -Increment NumOfIter in drawRec
+-change callback to add to queue to reduce nested recursive calls
+-Add alternating/repeated indent shape class
+	-Will be generalization of opposities, distance, and blend

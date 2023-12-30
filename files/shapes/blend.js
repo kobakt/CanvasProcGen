@@ -7,7 +7,7 @@ import { isSquare, makeShapeObject } from "./shapeObject.js";
  */
 function drawBlend(global, local) {
   const numOfBands = Math.round(
-    local.length / (global.settings.minSideSize * 2),
+    local.length / (global.settings2.minSideSize.val * 2),
   );
   const color2 = nextColor(global, local);
   const colors = getBlendColors(numOfBands, local.color, color2);
@@ -32,16 +32,15 @@ function drawBlend(global, local) {
 function isAvailable(global, local) {
   return (
     isSquare(local) &&
-    local.numOfIter >=
-      global.settings.minIterations.minBlendSquareIter &&
-    local.length >= global.settings.minSideSize * 3
+    local.numOfIter >= global.settings2.shapes.blend.minIter.val &&
+    local.length >= global.settings2.minSideSize.val * 3
   );
 }
 
 function blendObject() {
   return makeShapeObject(
     isAvailable,
-    (global) => global.settings.squareWeights.blendSquare,
+    (global) => global.settings2.shapes.blend.weight.val,
     drawBlend,
   );
 }
