@@ -1,9 +1,31 @@
--Increment NumOfIter in drawRec
--change callback to add to queue to reduce nested recursive calls
--Add alternating/repeated indent shape class
-	-Will be generalization of opposities, distance, and blend
--On sidebar, tie range with number https://stackoverflow.com/questions/44182411/range-slider-with-direct-number-input
--On sidebar, add reset button (input type="reset")
--On sidebar, add <fieldset> and <legend> to have nested option names.
--Maybe make splitFactors memoized as well or instead of allFactors.
--Investigate better structure for SplitContext
+TODOs:
+
+DrawRec:
+	Callback queue: change callback to add to queue to reduce nested recursive calls
+	NumOfIter: Increment NumOfIter in drawRec
+
+SideBar:
+	Number with slider: On sidebar, tie range with number https://stackoverflow.com/questions/44182411/range-slider-with-direct-number-input
+	Reset button: On sidebar, add reset button (input type="reset")
+	Nested names: On sidebar, add <fieldset> and <legend> to have nested option names.
+
+Split:
+	Memoize splitFactors: Maybe make splitFactors memoized as well or instead of allFactors.
+	Improve SplitContext: Investigate better structure for SplitContext
+
+Generalize:
+	New IndentSquare class: Add alternating/repeated indent shape class
+		Will be generalization of opposities, distance, and blend
+	New SpecialShape class: generaliztion of special shapes
+
+Random:
+	Seeded: Add new seeded random generator
+
+Color:
+	OKLAB: add OKLAB color support
+		Has code conversion example: https://bottosson.github.io/posts/oklab/
+	Percentage change: maybe do percentage increases instead too.
+
+Hosting:
+	Github page: https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site#creating-your-site
+	Custom hosting: buy webpage and host there.

@@ -21,7 +21,6 @@ export function allFactors(n) {
   return factors;
 }
 
-//TODO also make memoized maybe
 /**
  * Returns possible side lengths such that
  * they fall within min and max side lengths

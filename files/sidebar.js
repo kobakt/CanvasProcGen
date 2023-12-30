@@ -65,7 +65,6 @@ function changeEventFunction(setting, name, label, input) {
   };
 }
 
-//TODO tie range with number https://stackoverflow.com/questions/44182411/range-slider-with-direct-number-input
 /**
  * @template T
  * @param {import("./settings.js").Setting<T>} setting
@@ -94,8 +93,6 @@ function addSetting(setting, name) {
   sidebar.appendChild(div);
 }
 
-//TODO input type="reset"
-// TODO <fieldset> and <legend>
 /**
  * @param {object | import("./settings.js").Setting<any>} object
  * @param {string} name
@@ -104,7 +101,6 @@ function addElemsRec(object, name) {
   if (object.val !== undefined) {
     addSetting(object, name);
   } else {
-    // alert(JSON.stringify(Object.keys(object)));
     Object.keys(object)
       .filter((name) => object[name] !== undefined)
       .forEach((key) => {
