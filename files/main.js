@@ -28,11 +28,17 @@ function draw(settings) {
   // @ts-ignore
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
-  // ctx.translate(0.5, 0.5);
+  const scale = window.devicePixelRatio;
+  // const scale = 4;
 
   if (settings === null || settings === undefined) {
     settings = defaultSettings();
   }
+
+  [canvas.style.width, canvas.style.height] = [
+    settings.width.val / scale + "px",
+    settings.height.val / scale + "px",
+  ];
   [canvas.width, canvas.height] = [
     settings.width.val,
     settings.height.val,
