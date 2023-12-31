@@ -1,7 +1,8 @@
 TODOs:
 
 DrawStack:
-	NumOfIter: Increment NumOfIter in drawRec
+	NumOfIter: Increment NumOfIter in drawRec and maybe nextColor too
+		Only split and special have nesting
 
 SideBar:
 	Number with slider: On sidebar, tie range with number https://stackoverflow.com/questions/44182411/range-slider-with-direct-number-input
@@ -17,12 +18,11 @@ Split:
 	Memoize splitFactors: Maybe make splitFactors memoized as well or instead of allFactors.
 	Improve SplitContext: Investigate better structure for SplitContext
 
-Generalize:
-	Generalize drawIndent:		
-		Perhaps allow bool that allows indenting without drawing
+Indent:		
+	Perhaps allow bool that allows indenting without drawing for
 		for the purpose of special indenting.
-		Also possibly incorporate variable indenting amount.
-	
+	Try adding to special.
+	Also possibly incorporate variable indenting amount.
 
 Random:
 	Seeded: Add new seeded random generator
