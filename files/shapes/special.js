@@ -1,5 +1,6 @@
 import { nextColor } from "../colors.js";
 import {
+  drawIndentHelp,
   drawRect,
   isSquare,
   makeShapeObject,
@@ -45,17 +46,17 @@ function isAvailableSpecial(getSettings) {
 }
 
 /**
- * Updates local for nesting an object inside.
- * @param {GlobalContext} global
- * @param {LocalContext} local
- * @param {number} newLength
+ * Draws and updates local for nesting an object inside.
+ * @param {ContextFunction<number>} specialFun
+ * @returns{ContextFunction<void>}
  */
-function updateLocalNesting(global, local, newLength) {
-  local.numOfIter++;
-  local.color = nextColor(global, local);
-  local.length = newLength;
-  local.height = newLength;
-  local.specialShapePlaceable = true;
+function drawUpdateSpecial(specialFun) {
+  return (global, local) => {
+    const newLength = specialFun(global, local);
+    local.length = newLength;
+    local.height = newLength;
+    global.callback(global, local);
+  };
 }
 
 /**
@@ -66,27 +67,12 @@ function updateLocalNesting(global, local, newLength) {
  */
 function drawSpecial(specialFun, getSettings) {
   return (global, local) => {
-    if (local.specialShapePlaceable) {
-      specialFun(global, local);
-    } else {
-      drawRect(global, local);
-      if (
-        Math.random() <
-        getSettings(global, local).nestingIndentProb.val
-      ) {
-        local.length -= 2 * global.settings.minSideSize.val;
-        local.height -= 2 * global.settings.minSideSize.val;
-      }
-      local.color = nextColor(global, local);
-      const newLength = specialFun(global, local);
-      if (
-        newLength >= global.settings.minSideSize.val &&
-        Math.random() < getSettings(global, local).nestingProb.val
-      ) {
-        updateLocalNesting(global, local, newLength);
-        global.callback(global, local);
-      }
-    }
+    drawIndentHelp(
+      drawUpdateSpecial(specialFun),
+      !local.specialShapePlaceable,
+      Math.random() <
+        getSettings(global, local).nestingIndentProb.val,
+    )(global, local);
   };
 }
 

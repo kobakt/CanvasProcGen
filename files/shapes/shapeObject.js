@@ -57,17 +57,37 @@ function drawRect(global, local) {
  * @returns {ContextFunction<void>}
  */
 function drawIndent(contextFunc) {
+  return drawIndentHelp(contextFunc, true, true);
+}
+/**
+ * Creates a function which can indent and/or draw a rect
+ * with a nested draw function.
+ * @param {ContextFunction<void>} specialFunc
+ * @param {boolean} doDraw
+ * @param {boolean} doIndent
+ * @returns {ContextFunction<void>}
+ */
+function drawIndentHelp(specialFunc, doDraw, doIndent) {
   return (global, local) => {
-    drawRect(global, local);
-    const val1 = 2;
-    const val2 = 2;
-    local.length -= global.settings.minSideSize.val * val1;
-    local.height -= global.settings.minSideSize.val * val2;
-    local.color = nextColor(global, local);
-    local.numOfIter++;
-    local.specialShapePlaceable = true;
-    contextFunc(global, local);
+    if (doDraw) {
+      drawRect(global, local);
+      local.color = nextColor(global, local);
+    }
+    if (doIndent) {
+      const val1 = 2;
+      const val2 = 2;
+      local.length -= global.settings.minSideSize.val * val1;
+      local.height -= global.settings.minSideSize.val * val2;
+      local.specialShapePlaceable = true;
+    }
+    specialFunc(global, local);
   };
 }
 
-export { drawIndent, drawRect, makeShapeObject, isSquare };
+export {
+  drawIndentHelp,
+  drawIndent,
+  drawRect,
+  makeShapeObject,
+  isSquare,
+};
