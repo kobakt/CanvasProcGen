@@ -1,7 +1,7 @@
 "use strict";
 import { defaultSettings } from "./settings.js";
 import { makeHexColor, randomColor } from "./colors.js";
-import { drawStack } from "./draw.js";
+import { addToStack, drawStack } from "./draw.js";
 import { addElemsRec } from "./sidebar.js";
 /** @typedef {import("./settings.js").Settings} Settings */
 
@@ -41,7 +41,8 @@ function draw(settings) {
 
   /** @type {GlobalContext} global */
   let global = {
-    callback: (_global, local) => stack.push(local),
+    callback: addToStack(stack),
+    // callback: (_global, local) => stack.push(local),
     ctx: ctx,
     settings: settings,
   };

@@ -28,6 +28,7 @@ import { crossObject } from "./shapes/cross.js";
 shapes.push(crossObject());
 
 import { diamondObject } from "./shapes/diamond.js";
+import { nextColor } from "./colors.js";
 shapes.push(diamondObject());
 
 /**
@@ -58,6 +59,18 @@ function pickShape(global, local, shapesToPick) {
 }
 
 /**
+ * Returns function which adds to stack as well as updating color and numOfIter
+ * @param {LocalContext[]} stack
+ * @returns {ContextFunction<void>}
+ */
+function addToStack(stack) {
+  return (global, local) => {
+    local.color = nextColor(global, local);
+    local.numOfIter++;
+    stack.push(local);
+  };
+}
+/**
  * Recursive function which handles drawing a section of the canvas.
  * @param {GlobalContext} global
  * @param {LocalContext} initLocal
@@ -87,28 +100,4 @@ function drawStack(global, initLocal, stack) {
   }
 }
 
-// /**
-//  * Recursive function which handles drawing a section of the canvas.
-//  * @param {GlobalContext} global
-//  * @param {LocalContext} local
-//  * @returns {void}
-//  */
-// function drawRec(global, local) {
-//   let availableShapes = shapes.filter(
-//     (x) => x.isAvailable(global, local) && x.weight(global, local),
-//   );
-//   if (availableShapes.length === 0) {
-//     if (local.specialShapePlaceable) {
-//       // rect is not available and
-//       // we don't need to draw a rect in this case,
-//       // so don't draw anything.
-//       return;
-//     }
-//     // Need to draw something, so draw a rect.
-//     availableShapes.push(rectObject());
-//   }
-
-//   let curShape = pickShape(global, local, availableShapes);
-//   curShape.drawShape(global, local);
-// }
-export { drawStack };
+export { addToStack, drawStack };

@@ -1,8 +1,6 @@
 TODOs:
 
-DrawStack:
-	NumOfIter: Increment NumOfIter in drawRec and maybe nextColor too
-		Only split and special have nesting
+LocalContext: addFunction to update LocalContext so users don't unintentionally update color or numOfIter
 
 SideBar:
 	Number with slider: On sidebar, tie range with number https://stackoverflow.com/questions/44182411/range-slider-with-direct-number-input
