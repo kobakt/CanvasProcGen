@@ -7,6 +7,7 @@ import {
 /** @typedef {import("./shapeObject.js").Shape} Shape*/
 
 /**
+ * Determines if recIndent can be drawn.
  * @param {ContextFunction} minIterValFunc
  * @returns {ContextFunction}
  */
@@ -18,20 +19,31 @@ function isAvailableIndent(minIterValFunc) {
 }
 
 /**
+ * A function which changes local.color
  * @callback ChangeColor
  * @param {number} iter
  */
 
 /**
+ * Gets the number of bands in the recIndent.
+ * @param {GlobalContext} global
+ * @param {LocalContext} local
+ * @returns {number}
+ */
+function getNumOfBands(global, local) {
+  return Math.round(
+    local.length / (global.settings.minSideSize.val * 2),
+  );
+}
+
+/**
+ * Draws the recIndent with the given color-changing helper function.
  * @param {ContextFunction} changeColorHelp
  * @returns {ContextFunction}
  */
 function drawRecIndent(changeColorHelp) {
   return (global, local) => {
-    const numOfBands = Math.round(
-      local.length / (global.settings.minSideSize.val * 2),
-    );
-    /** @type {ChangeColor} changeColor */
+    const numOfBands = getNumOfBands(global, local);
     const changeColor = changeColorHelp(global, local);
     for (let i = 0; i < numOfBands; i++) {
       changeColor(i);
@@ -43,6 +55,7 @@ function drawRecIndent(changeColorHelp) {
 }
 
 /**
+ * Makes a recIndent
  * @param {ContextFunction} minIterValFunc
  * @param {ContextFunction} weightFunc
  * @param {ContextFunction} changeColorHelp
@@ -57,6 +70,7 @@ function makeRecIndent(minIterValFunc, weightFunc, changeColorHelp) {
 }
 
 /**
+ * The color help function for distance recIndent
  * @param {GlobalContext} global
  * @param {LocalContext} local
  * @returns {ChangeColor}
@@ -70,6 +84,7 @@ function distanceColorHelp(global, local) {
 }
 
 /**
+ * The distance recIndent
  * @returns {Shape}
  */
 function distance() {
@@ -81,6 +96,7 @@ function distance() {
 }
 
 /**
+ * The color help function for opposites recIndent
  * @param {GlobalContext} global
  * @param {LocalContext} local
  * @returns {ChangeColor}
@@ -94,6 +110,7 @@ function oppositesColorHelp(global, local) {
 }
 
 /**
+ * The opposites recIndent
  * @returns {Shape}
  */
 function opposites() {
@@ -105,14 +122,13 @@ function opposites() {
 }
 
 /**
+ * The color help function for blend recIndent
  * @param {GlobalContext} global
  * @param {LocalContext} local
  * @returns {ChangeColor}
  */
 function blendColorHelp(global, local) {
-  const numOfBands = Math.round(
-    local.length / (global.settings.minSideSize.val * 2),
-  );
+  const numOfBands = getNumOfBands(global, local);
   const color2 = nextColor(global, local);
   const colors = getBlendColors(numOfBands, local.color, color2);
   return (i) => {
@@ -121,6 +137,7 @@ function blendColorHelp(global, local) {
 }
 
 /**
+ * The blend recIndent
  * @returns {Shape}
  */
 function blend() {
