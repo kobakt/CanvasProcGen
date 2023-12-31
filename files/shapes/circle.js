@@ -1,22 +1,9 @@
 import { hex, nextColor } from "../colors.js";
-import {
-  drawSpecial,
-  floorEvenOrOdd,
-  isAvailableSpecial,
-  makeShapeObject,
-} from "./shapeObject.js";
+import { floorEvenOrOdd } from "./shapeObject.js";
+import { makeSpecial } from "./special.js";
 
 /**
- * @param {GlobalContext} global
- * @param {LocalContext} local
- */
-function isAvailable(global, local) {
-  return isAvailableSpecial(
-    global.settings.shapes.circle.minIter.val,
-  )(global, local);
-}
-
-/**
+ * Just draws the circle and nested objects
  * @param {GlobalContext} global
  * @param {LocalContext} local
  */
@@ -53,13 +40,11 @@ function drawCircleHelp(global, local) {
 }
 
 function circleObject() {
-  return makeShapeObject(
-    isAvailable,
+  return makeSpecial(
+    (global) => global.settings.shapes.circle.minIter.val,
     (global) => global.settings.shapes.circle.weight.val,
-    drawSpecial(
-      drawCircleHelp,
-      (global) => global.settings.shapes.circle.nestingIndentProb.val,
-    ),
+    drawCircleHelp,
+    (global) => global.settings.shapes.circle.nestingIndentProb.val,
   );
 }
 

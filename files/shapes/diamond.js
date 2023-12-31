@@ -1,20 +1,6 @@
 import { hex, nextColor } from "../colors.js";
-import {
-  drawSpecial,
-  floorEvenOrOdd,
-  isAvailableSpecial,
-  makeShapeObject,
-} from "./shapeObject.js";
-
-/**
- * @param {GlobalContext} global
- * @param {LocalContext} local
- */
-function isAvailable(global, local) {
-  return isAvailableSpecial(
-    global.settings.shapes.diamond.minIter.val,
-  )(global, local);
-}
+import { floorEvenOrOdd } from "./shapeObject.js";
+import { makeSpecial } from "./special.js";
 
 /**
  * @param {GlobalContext} global
@@ -53,14 +39,11 @@ function drawDiamondHelp(global, local) {
 }
 
 function diamondObject() {
-  return makeShapeObject(
-    isAvailable,
+  return makeSpecial(
+    (global) => global.settings.shapes.diamond.minIter.val,
     (global) => global.settings.shapes.diamond.weight.val,
-    drawSpecial(
-      drawDiamondHelp,
-      (global) =>
-        global.settings.shapes.diamond.nestingIndentProb.val,
-    ),
+    drawDiamondHelp,
+    (global) => global.settings.shapes.diamond.nestingIndentProb.val,
   );
 }
 

@@ -1,21 +1,6 @@
 import { hex, nextColor } from "../colors.js";
-import {
-  drawSpecial,
-  floorEvenOrOdd,
-  isAvailableSpecial,
-  makeShapeObject,
-} from "./shapeObject.js";
-
-/**
- * @param {GlobalContext} global
- * @param {LocalContext} local
- */
-function isAvailable(global, local) {
-  return isAvailableSpecial(global.settings.shapes.cross.minIter.val)(
-    global,
-    local,
-  );
-}
+import { floorEvenOrOdd } from "./shapeObject.js";
+import { makeSpecial } from "./special.js";
 
 /**
  * @param {GlobalContext} global
@@ -76,13 +61,11 @@ function drawCrossHelp(global, local) {
 }
 
 function crossObject() {
-  return makeShapeObject(
-    isAvailable,
+  return makeSpecial(
+    (global) => global.settings.shapes.cross.minIter.val,
     (global) => global.settings.shapes.cross.weight.val,
-    drawSpecial(
-      drawCrossHelp,
-      (global) => global.settings.shapes.cross.nestingIndentProb.val,
-    ),
+    drawCrossHelp,
+    (global) => global.settings.shapes.cross.nestingIndentProb.val,
   );
 }
 

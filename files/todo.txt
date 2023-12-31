@@ -19,7 +19,6 @@ Split:
 	Improve SplitContext: Investigate better structure for SplitContext
 
 Generalize:
-	New SpecialShape class: generaliztion of special shapes
 	Generalize drawIndent:generalize it like drawRect has been 
 		function drawIndent(drawFunc) { 
 			return (global, local) => ...drawFunc(global, local)... 
@@ -42,3 +41,7 @@ Hosting:
 
 Conext:
 	Change ContextFunction to templated ContextFunction<T>
+
+Special:
+	Prevent rect from appearing when specialShape is placeable.
+	Add recursive call to generalized function.
