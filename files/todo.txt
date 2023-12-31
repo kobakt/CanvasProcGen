@@ -1,7 +1,6 @@
 TODOs:
 
-DrawRec:
-	Callback queue: change callback to add to queue to reduce nested recursive calls
+DrawStack:
 	NumOfIter: Increment NumOfIter in drawRec
 
 SideBar:

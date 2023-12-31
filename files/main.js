@@ -1,7 +1,7 @@
 "use strict";
 import { defaultSettings } from "./settings.js";
 import { makeHexColor, randomColor } from "./colors.js";
-import { drawRec } from "./draw.js";
+import { drawStack } from "./draw.js";
 import { addElemsRec } from "./sidebar.js";
 /** @typedef {import("./settings.js").Settings} Settings */
 
@@ -37,14 +37,16 @@ function draw(settings) {
     ? randomColor()
     : makeHexColor(settings.color.startColor.val);
 
+  const stack = [];
+
   /** @type {GlobalContext} global */
   let global = {
-    callback: drawRec,
+    callback: (_global, local) => stack.push(local),
     ctx: ctx,
     settings: settings,
   };
   /** @type {LocalContext} local */
-  let local = {
+  let initLocal = {
     length: settings.width.val,
     height: settings.height.val,
     centerX: settings.width.val / 2,
@@ -58,7 +60,7 @@ function draw(settings) {
     specialShapePlaceable: false,
   };
 
-  drawRec(global, local);
+  drawStack(global, initLocal, stack);
 }
 
 /**

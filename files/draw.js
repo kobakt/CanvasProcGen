@@ -60,26 +60,55 @@ function pickShape(global, local, shapesToPick) {
 /**
  * Recursive function which handles drawing a section of the canvas.
  * @param {GlobalContext} global
- * @param {LocalContext} local
+ * @param {LocalContext} initLocal
+ * @param {LocalContext[]} stack
  * @returns {void}
  */
-function drawRec(global, local) {
-  let availableShapes = shapes.filter(
-    (x) => x.isAvailable(global, local) && x.weight(global, local),
-  );
-  if (availableShapes.length === 0) {
-    if (local.specialShapePlaceable) {
-      // rect is not available and
-      // we don't need to draw a rect in this case,
-      // so don't draw anything.
-      return;
+function drawStack(global, initLocal, stack) {
+  stack.push(initLocal);
+  while (stack.length > 0) {
+    const local = stack.pop();
+    let availableShapes = shapes.filter(
+      (x) => x.isAvailable(global, local) && x.weight(global, local),
+    );
+    if (availableShapes.length === 0) {
+      if (local.specialShapePlaceable) {
+        // rect is not available and
+        // we don't need to draw a rect in this case,
+        // so don't draw anything.
+        continue;
+        // return;
+      }
+      // Need to draw something, so draw a rect.
+      availableShapes.push(rectObject());
     }
-    // Need to draw something, so draw a rect.
-    availableShapes.push(rectObject());
+    let curShape = pickShape(global, local, availableShapes);
+    curShape.drawShape(global, local);
   }
-
-  let curShape = pickShape(global, local, availableShapes);
-  curShape.drawShape(global, local);
 }
 
-export { drawRec };
+// /**
+//  * Recursive function which handles drawing a section of the canvas.
+//  * @param {GlobalContext} global
+//  * @param {LocalContext} local
+//  * @returns {void}
+//  */
+// function drawRec(global, local) {
+//   let availableShapes = shapes.filter(
+//     (x) => x.isAvailable(global, local) && x.weight(global, local),
+//   );
+//   if (availableShapes.length === 0) {
+//     if (local.specialShapePlaceable) {
+//       // rect is not available and
+//       // we don't need to draw a rect in this case,
+//       // so don't draw anything.
+//       return;
+//     }
+//     // Need to draw something, so draw a rect.
+//     availableShapes.push(rectObject());
+//   }
+
+//   let curShape = pickShape(global, local, availableShapes);
+//   curShape.drawShape(global, local);
+// }
+export { drawStack };

@@ -1,4 +1,4 @@
-import { drawRec } from "../draw.js";
+import { drawStack } from "../draw.js";
 import { drawIndent, makeShapeObject } from "./shapeObject.js";
 /** @typedef {import("./shapeObject.js").Shape} Shape */
 
@@ -25,7 +25,7 @@ function indentObject() {
   return makeShapeObject(
     isAvailable,
     (global) => global.settings.shapes.indent.weight.val,
-    drawIndent(drawRec),
+    (global, local) => drawIndent(global.callback)(global, local),
   );
 }
 
