@@ -2,11 +2,11 @@
 // alert("colors.js")
 
 /**
-@param {number} r 
-@param {number} g
-@param {number} b 
-@returns {string}
-*/
+ * @param {number} r
+ * @param {number} g
+ * @param {number} b
+ * @returns {string}
+ */
 function makeHexCode(r, g, b) {
   return "#".concat(
     [r, g, b].reduce((prev, cur) => {
@@ -32,18 +32,18 @@ function makeHexCode(r, g, b) {
 }
 
 /**
-@typedef Color
-@prop {number} r
-@prop {number} g
-@prop {number} b
-*/
+ * @typedef Color
+ * @prop {number} r
+ * @prop {number} g
+ * @prop {number} b
+ */
 
 /**
-@param {number} r 
-@param {number} g
-@param {number} b 
-@returns {Color}
-*/
+ * @param {number} r
+ * @param {number} g
+ * @param {number} b
+ * @returns {Color}
+ */
 function makeColor(r, g, b) {
   return {
     r: Math.round(r),
@@ -53,22 +53,22 @@ function makeColor(r, g, b) {
 }
 
 /**
-@param {Color} color
-*/
+ * @param {Color} color
+ */
 function hex(color) {
   return makeHexCode(color.r, color.g, color.b);
 }
 
 /**
-@param {Color} color
-*/
+ * @param {Color} color
+ */
 function arr(color) {
   return [color.r, color.g, color.b];
 }
 
 /**
-@param {string} hexCode
-*/
+ * @param {string} hexCode
+ */
 function makeHexColor(hexCode) {
   return makeColor(
     parseInt(hexCode.substr(1, 2), 16),

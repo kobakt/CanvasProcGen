@@ -1,7 +1,8 @@
 import { FormType } from "./settings.js";
-/** 
-@template T
-@typedef {import("./settings.js").Setting<T>} Setting} Setting */
+/**
+ * @template T
+ * @typedef {import("./settings.js").Setting<T>} Setting} Setting
+ */
 
 /**
  * Sets the text for a given label.

@@ -39,8 +39,5 @@ Color:
 Hosting:
 	Custom hosting: buy webpage and host there.
 
-Conext:
-	Change ContextFunction to templated ContextFunction<T>
-
 Special:
 	Add recursive call to generalized function.

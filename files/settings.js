@@ -159,10 +159,10 @@ function makeShapeObjectSettings(
  */
 
 /**
-Generates a new default settings object.
-A function call is used in case an entire new object is needed.
-@returns {Settings}
-*/
+ * Generates a new default settings object.
+ * A function call is used in case an entire new object is needed.
+ * @returns {Settings}
+ */
 function defaultSettings() {
   return {
     width: makeSetting(

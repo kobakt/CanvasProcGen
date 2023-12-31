@@ -1,23 +1,23 @@
 /**
-@typedef {import("./colors.js").Color} Color
-@typedef {import("./settings.js").Settings} Settings
-*/
+ * @typedef {import("./colors.js").Color} Color
+ * @typedef {import("./settings.js").Settings} Settings
+ */
 
 /**
 // if prop missing, then assumed not set
 // else just use bool
-@typedef SplitContext
-@prop {boolean} lastSplitByLength
-@prop {boolean} lastSplitByHeight
+ * @typedef SplitContext
+ * @prop {boolean} lastSplitByLength
+ * @prop {boolean} lastSplitByHeight
 */
 
 /**
-Used and not modified for all calls
-@typedef GlobalContext 
-@prop {Settings} settings
-@prop {ContextFunction} callback
-@prop {CanvasRenderingContext2D} ctx
-*/
+ * Used and not modified for all calls
+ * @typedef GlobalContext
+ * @prop {Settings} settings
+ * @prop {ContextFunction<void>} callback
+ * @prop {CanvasRenderingContext2D} ctx
+ */
 
 /*
 LocalContext will be cloned
@@ -31,20 +31,22 @@ could be function that takes in full local + partial to replace
 */
 
 /**
-Used for a sepcific drawing call
-@typedef LocalContext 
-@prop {number} length
-@prop {number} height
-@prop {number} centerX
-@prop {number} centerY
-@prop {Color} color
-@prop {number} numOfIter
-@prop {SplitContext} split
-@prop {boolean} specialShapePlaceable
-*/
+ * Used for a specific drawing call
+ * @typedef LocalContext
+ * @prop {number} length
+ * @prop {number} height
+ * @prop {number} centerX
+ * @prop {number} centerY
+ * @prop {Color} color
+ * @prop {number} numOfIter
+ * @prop {SplitContext} split
+ * @prop {boolean} specialShapePlaceable
+ */
 
 /**
-@callback ContextFunction
-@param {GlobalContext} global
-@param {LocalContext} local
-*/
+ * @template T
+ * @callback ContextFunction
+ * @param {GlobalContext} global
+ * @param {LocalContext} local
+ * @returns {T}
+ */

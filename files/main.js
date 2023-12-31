@@ -3,9 +3,7 @@ import { defaultSettings } from "./settings.js";
 import { makeHexColor, randomColor } from "./colors.js";
 import { drawRec } from "./draw.js";
 import { addElemsRec } from "./sidebar.js";
-/**
-@typedef {import("./settings.js").Settings} Settings
-*/
+/** @typedef {import("./settings.js").Settings} Settings */
 
 /**
  * Sets up the canvas to de drawn and then calls drawRec.

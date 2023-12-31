@@ -8,8 +8,8 @@ import {
 
 /**
  * Determines if recIndent can be drawn.
- * @param {ContextFunction} minIterValFunc
- * @returns {ContextFunction}
+ * @param {ContextFunction<number>} minIterValFunc
+ * @returns {ContextFunction<boolean>}
  */
 function isAvailableIndent(minIterValFunc) {
   return (global, local) =>
@@ -22,6 +22,7 @@ function isAvailableIndent(minIterValFunc) {
  * A function which changes local.color
  * @callback ChangeColor
  * @param {number} iter
+ * @returns {void}
  */
 
 /**
@@ -38,8 +39,8 @@ function getNumOfBands(global, local) {
 
 /**
  * Draws the recIndent with the given color-changing helper function.
- * @param {ContextFunction} changeColorHelp
- * @returns {ContextFunction}
+ * @param {ContextFunction<ChangeColor>} changeColorHelp
+ * @returns {ContextFunction<void>}
  */
 function drawRecIndent(changeColorHelp) {
   return (global, local) => {
@@ -56,9 +57,9 @@ function drawRecIndent(changeColorHelp) {
 
 /**
  * Makes a recIndent
- * @param {ContextFunction} minIterValFunc
- * @param {ContextFunction} weightFunc
- * @param {ContextFunction} changeColorHelp
+ * @param {ContextFunction<number>} minIterValFunc
+ * @param {ContextFunction<number>} weightFunc
+ * @param {ContextFunction<ChangeColor>} changeColorHelp
  * @returns {Shape}
  */
 function makeRecIndent(minIterValFunc, weightFunc, changeColorHelp) {

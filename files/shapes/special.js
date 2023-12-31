@@ -25,8 +25,8 @@ function floorEvenOrOdd(n, m) {
 /**
  * A function used to determine if a special object
  * can be drawn or not.
- * @param {ContextFunction} minIterFunc
- * @returns {ContextFunction}
+ * @param {ContextFunction<number>} minIterFunc
+ * @returns {ContextFunction<boolean>}
  */
 function isAvailableSpecial(minIterFunc) {
   return (global, local) => {
@@ -44,9 +44,9 @@ function isAvailableSpecial(minIterFunc) {
 
 /**
  * A function used to draw special objects.
- * @param {ContextFunction} specialFun
- * @param {ContextFunction} nestingIndentProbFunc
- * @returns {ContextFunction}
+ * @param {ContextFunction<void>} specialFun
+ * @param {ContextFunction<number>} nestingIndentProbFunc
+ * @returns {ContextFunction<void>}
  */
 function drawSpecial(specialFun, nestingIndentProbFunc) {
   return (global, local) => {
@@ -66,10 +66,10 @@ function drawSpecial(specialFun, nestingIndentProbFunc) {
 
 /**
  * Makes a special shape.
- * @param {ContextFunction} minIterValFunc
- * @param {ContextFunction} weightFunc
- * @param {ContextFunction} drawHelp
- * @param {ContextFunction} nestingIndentFunc
+ * @param {ContextFunction<number>} minIterValFunc
+ * @param {ContextFunction<number>} weightFunc
+ * @param {ContextFunction<void>} drawHelp
+ * @param {ContextFunction<number>} nestingIndentFunc
  */
 function makeSpecial(
   minIterValFunc,

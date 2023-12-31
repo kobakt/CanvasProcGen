@@ -5,16 +5,16 @@ import { hex } from "../colors.js";
 /**
  * A shape object used to draw on th canvas.
  * @typedef {Object} Shape
- * @prop {ContextFunction} isAvailable
- * @prop {ContextFunction} weight
- * @prop {ContextFunction} drawShape
+ * @prop {ContextFunction<boolean>} isAvailable
+ * @prop {ContextFunction<number>} weight
+ * @prop {ContextFunction<void>} drawShape
  */
 
 /**
  * A function to make a Shape.
- * @param {ContextFunction} isAvailable
- * @param {ContextFunction} weight
- * @param {ContextFunction} drawShape
+ * @param {ContextFunction<boolean>} isAvailable
+ * @param {ContextFunction<number>} weight
+ * @param {ContextFunction<void>} drawShape
  * @returns {Shape}
  */
 function makeShapeObject(isAvailable, weight, drawShape) {
