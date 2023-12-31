@@ -1,6 +1,5 @@
 import { hex, nextColor } from "../colors.js";
-import { floorEvenOrOdd } from "./shapeObject.js";
-import { makeSpecial } from "./special.js";
+import { floorEvenOrOdd, makeSpecial } from "./special.js";
 
 /**
  * Just draws the circle and nested objects
