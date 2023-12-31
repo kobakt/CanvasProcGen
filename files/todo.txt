@@ -19,10 +19,7 @@ Split:
 	Improve SplitContext: Investigate better structure for SplitContext
 
 Generalize:
-	Generalize drawIndent:generalize it like drawRect has been 
-		function drawIndent(drawFunc) { 
-			return (global, local) => ...drawFunc(global, local)... 
-		}
+	Generalize drawIndent:		
 		Perhaps allow bool that allows indenting without drawing
 		for the purpose of special indenting.
 		Also possibly incorporate variable indenting amount.
