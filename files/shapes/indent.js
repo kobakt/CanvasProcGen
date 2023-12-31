@@ -1,5 +1,5 @@
-import { nextColor } from "../colors.js";
-import { drawRect, makeShapeObject } from "./shapeObject.js";
+import { drawRec } from "../draw.js";
+import { drawIndent, makeShapeObject } from "./shapeObject.js";
 /** @typedef {import("./shapeObject.js").Shape} Shape */
 
 /**
@@ -18,24 +18,6 @@ function isAvailable(global, local) {
 }
 
 /**
- * Draws an indent shape with a nested draw call.
- * @param {GlobalContext} global
- * @param {LocalContext} local
- * @returns {void}
- */
-function drawIndent(global, local) {
-  drawRect(global, local);
-
-  local.numOfIter++;
-  local.color = nextColor(global, local);
-  local.length -= global.settings.minSideSize.val * 2;
-  local.height -= global.settings.minSideSize.val * 2;
-  local.specialShapePlaceable = true;
-
-  global.callback(global, local);
-}
-
-/**
  * Creates an indent object.
  * @returns {Shape}
  */
@@ -43,7 +25,7 @@ function indentObject() {
   return makeShapeObject(
     isAvailable,
     (global) => global.settings.shapes.indent.weight.val,
-    drawIndent,
+    drawIndent(drawRec),
   );
 }
 

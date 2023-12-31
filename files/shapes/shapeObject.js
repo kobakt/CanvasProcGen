@@ -1,6 +1,6 @@
 "use strict";
 
-import { hex } from "../colors.js";
+import { hex, nextColor } from "../colors.js";
 
 /**
  * A shape object used to draw on th canvas.
@@ -50,4 +50,24 @@ function drawRect(global, local) {
   );
 }
 
-export { drawRect, makeShapeObject, isSquare };
+/**
+ * Creates a function which draws an indent shape
+ * with a nested draw function.
+ * @param {ContextFunction<void>} contextFunc
+ * @returns {ContextFunction<void>}
+ */
+function drawIndent(contextFunc) {
+  return (global, local) => {
+    drawRect(global, local);
+    const val1 = 2;
+    const val2 = 2;
+    local.length -= global.settings.minSideSize.val * val1;
+    local.height -= global.settings.minSideSize.val * val2;
+    local.color = nextColor(global, local);
+    local.numOfIter++;
+    local.specialShapePlaceable = true;
+    contextFunc(global, local);
+  };
+}
+
+export { drawIndent, drawRect, makeShapeObject, isSquare };
