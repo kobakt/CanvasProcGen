@@ -1,4 +1,3 @@
-import { drawStack } from "../draw.js";
 import { drawIndent, makeShapeObject } from "./shapeObject.js";
 /** @typedef {import("./shapeObject.js").Shape} Shape */
 
