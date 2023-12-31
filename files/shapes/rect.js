@@ -1,6 +1,9 @@
 import { drawRect, makeShapeObject } from "./shapeObject.js";
+/** @typedef {import("shapes/shapeObject.js").Shape} Shape
 
 /**
+ * Determines if a rect can be drawn based on the ratio
+ * of the local length and height vs the global length and height.
  * @param {GlobalContext} global
  * @param {LocalContext} local
  */
@@ -18,8 +21,11 @@ function isAvailable(global, local) {
   );
 }
 
+/**
+ * Creates a simple object that draws a rectangle.
+ * @returns {Shape}
+ */
 function rectObject() {
-  // also separate square weight to possibly look at
   return makeShapeObject(
     isAvailable,
     (global) => global.settings.shapes.rect.weight.val,

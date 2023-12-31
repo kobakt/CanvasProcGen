@@ -1,7 +1,11 @@
 import { FormType } from "./settings.js";
+/** 
+@template T
+@typedef {import("./settings.js").Setting<T>} Setting} Setting */
 
 /**
- * @param {import("./settings.js").Setting<any>} setting
+ * Sets the text for a given label.
+ * @param {Setting<any>} setting
  * @param {string} name
  * @param {HTMLLabelElement} label
  * @param {any} value
@@ -11,7 +15,8 @@ function setLabelText(setting, name, label, value) {
 }
 
 /**
- * @param {import("./settings.js").Setting<any>} setting
+ * Gets the value in an input given the formType.
+ * @param {Setting<any>} setting
  * @param {HTMLInputElement} input
  */
 function getInputValue(setting, input) {
@@ -27,7 +32,8 @@ function getInputValue(setting, input) {
   }
 }
 /**
- * @param {import("./settings.js").Setting<any>} setting
+ * Sets the input value and other parameters based on a formType.
+ * @param {Setting<any>} setting
  * @param {HTMLInputElement} input
  * @param {any} value
  * @param {number} [min]
@@ -53,7 +59,8 @@ function setInputValue(setting, input, value, min, max) {
 }
 
 /**
- * @param {import("./settings.js").Setting<any>} setting
+ * Creates a changeEventFunction based on the formType.
+ * @param {Setting<any>} setting
  * @param {string} name
  * @param {HTMLLabelElement} label
  * @param {HTMLInputElement} input
@@ -66,8 +73,9 @@ function changeEventFunction(setting, name, label, input) {
 }
 
 /**
+ * Adds a given setting to the HTML sidebar.
  * @template T
- * @param {import("./settings.js").Setting<T>} setting
+ * @param {Setting<T>} setting
  * @param {string} name
  */
 function addSetting(setting, name) {
@@ -94,7 +102,8 @@ function addSetting(setting, name) {
 }
 
 /**
- * @param {object | import("./settings.js").Setting<any>} object
+ * Recursively adds Settings to the sidebar.
+ * @param {object | Setting<any>} object
  * @param {string} name
  */
 function addElemsRec(object, name) {

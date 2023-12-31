@@ -3,18 +3,20 @@
 import { hex, nextColor } from "../colors.js";
 
 /**
-@typedef {Object} Shape
-@prop {ContextFunction} isAvailable
-@prop {ContextFunction} weight
-@prop {ContextFunction} drawShape
-*/
+ * A shape object used to draw on th canvas.
+ * @typedef {Object} Shape
+ * @prop {ContextFunction} isAvailable
+ * @prop {ContextFunction} weight
+ * @prop {ContextFunction} drawShape
+ */
 
 /**
-@param {ContextFunction} isAvailable 
-@param {ContextFunction} weight
-@param {ContextFunction} drawShape
-@returns {Shape}
-*/
+ * A function to make a Shape.
+ * @param {ContextFunction} isAvailable
+ * @param {ContextFunction} weight
+ * @param {ContextFunction} drawShape
+ * @returns {Shape}
+ */
 function makeShapeObject(isAvailable, weight, drawShape) {
   return {
     isAvailable,
@@ -24,7 +26,9 @@ function makeShapeObject(isAvailable, weight, drawShape) {
 }
 
 /**
+ * Are we drawing a square shape?
  * @param {LocalContext} local
+ * @returns {boolean}
  */
 function isSquare(local) {
   return local.length === local.height;
@@ -37,7 +41,6 @@ function isSquare(local) {
  * So when you don't know if the centers end with .0 or .5
  * and you want to know whether n should be even or odd like m,
  * use this.
- *
  * @param {number} n
  * @param {number} m
  */
@@ -49,8 +52,10 @@ function floorEvenOrOdd(n, m) {
 }
 
 /**
+ * Draws a simple rectangle.
  * @param {GlobalContext} global
  * @param {LocalContext} local
+ * @returns {void}
  */
 function drawRect(global, local) {
   global.ctx.fillStyle = hex(local.color);
@@ -63,6 +68,7 @@ function drawRect(global, local) {
 }
 
 /**
+ * A function used to draw special objects.
  * @param {ContextFunction} specialFun
  * @param {ContextFunction} nestingIndentProbFunc
  * @returns {ContextFunction}
@@ -84,6 +90,8 @@ function drawSpecial(specialFun, nestingIndentProbFunc) {
 }
 
 /**
+ * A function used to determine if a special object
+ * can be drawn or not.
  * @param {number} specialMinIter
  * @returns {ContextFunction}
  */

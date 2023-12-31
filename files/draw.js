@@ -1,7 +1,5 @@
 "use strict";
-/**
-@typedef {import("./shapes/shapeObject.js").Shape} Shape
-*/
+/** @typedef {import("./shapes/shapeObject.js").Shape} Shape */
 
 const shapes = [];
 

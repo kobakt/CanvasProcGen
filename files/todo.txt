@@ -22,6 +22,13 @@ Generalize:
 	New IndentSquare class: Add alternating/repeated indent shape class
 		Will be generalization of opposities, distance, and blend
 	New SpecialShape class: generaliztion of special shapes
+	Generalize drawIndent:generalize it like drawRect has been 
+		function drawIndent(drawFunc) { 
+			return (global, local) => ...drawFunc(global, local)... 
+		}
+		Perhaps allow bool that allows indenting without drawing
+		for the purpose of special indenting.
+		Also possibly incorporate variable indenting amount.
 
 Random:
 	Seeded: Add new seeded random generator
