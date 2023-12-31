@@ -54,6 +54,7 @@ function pickShape(global, local, shapesToPick) {
     }
     selectionWeight -= curShape.weight(global, local);
   }
+  return shapesToPick.pop();
 }
 
 /**
@@ -63,8 +64,8 @@ function pickShape(global, local, shapesToPick) {
  * @returns {void}
  */
 function drawRec(global, local) {
-  let availableShapes = shapes.filter((x) =>
-    x.isAvailable(global, local),
+  let availableShapes = shapes.filter(
+    (x) => x.isAvailable(global, local) && x.weight(global, local),
   );
   if (availableShapes.length === 0) {
     if (local.specialShapePlaceable) {
