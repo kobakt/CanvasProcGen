@@ -1,5 +1,9 @@
 "use strict";
 
+/**
+ * An enum for the type of input form to use in HTML.
+ * "val" is the the valid type for that input element.
+ */
 const FormType = {
   Slider: "range",
   Number: "number",
@@ -9,6 +13,8 @@ const FormType = {
 Object.freeze(FormType);
 
 /**
+ * Represents an individual setting.
+ * "val" depends on FormType
  * @template T
  * @typedef {Object} Setting
  * @prop {T} val
@@ -19,6 +25,7 @@ Object.freeze(FormType);
  */
 
 /**
+ * Creates a Setting based on parameters. Returns undefined if val is undefined.
  * @template T
  * @param {T} val
  * @param {string} desc
@@ -41,21 +48,25 @@ function makeSetting(val, desc, formType, min, max) {
 }
 
 /**
-@typedef {Object} ShapeObjectSettings
-@prop {Setting<number>} weight
-@prop {Setting<number>} minIter
-@prop {Setting<number>} [maxIter]
-@prop {Setting<number>} [nestingProb]
-@prop {Setting<number>} [nestingIndentProb]
-*/
+ * A grouping of Setting that is used for shapes.
+ * Custom settings could be used instead.
+ * @typedef {Object} ShapeObjectSettings
+ * @prop {Setting<number>} weight
+ * @prop {Setting<number>} minIter
+ * @prop {Setting<number>} [maxIter]
+ * @prop {Setting<number>} [nestingProb]
+ * @prop {Setting<number>} [nestingIndentProb]
+ */
 
 /**
-@param {number} minIter
-@param {number} [maxIter]
-@param {number} [nestingProb]
-@param {number} [nestingIndentProb]
-@returns {ShapeObjectSettings}
-*/
+ * Makes a ShapeObjectSetting with default Setting descriptions,
+ * default weight of 1, and default min and max properties.
+ * @param {number} minIter
+ * @param {number} [maxIter]
+ * @param {number} [nestingProb]
+ * @param {number} [nestingIndentProb]
+ * @returns {ShapeObjectSettings}
+ */
 function makeShapeObjectSettings(
   minIter,
   maxIter,
@@ -102,46 +113,54 @@ function makeShapeObjectSettings(
 }
 
 /**
-@typedef {object} ColorSettings
-@prop {Setting<boolean>} randomColor
-@prop {Setting<string>} startColor
-@prop {Setting<number>} minDist
-@prop {Setting<number>} maxDist
-*/
+ * A collection of Setting regarding color.
+ * @typedef {object} ColorSettings
+ * @prop {Setting<boolean>} randomColor
+ * @prop {Setting<string>} startColor
+ * @prop {Setting<number>} minDist
+ * @prop {Setting<number>} maxDist
+ */
 
 /**
-@typedef {object} ShapesSettings
-@prop {ShapeObjectSettings} rect
-@prop {ShapeObjectSettings} split
-@prop {ShapeObjectSettings} indent
-@prop {ShapeObjectSettings} blend
-@prop {ShapeObjectSettings} distance
-@prop {ShapeObjectSettings} opposites
-@prop {ShapeObjectSettings} circle
-@prop {ShapeObjectSettings} diamond
-@prop {ShapeObjectSettings} cross
-*/
+ * The grouping of all shape settings.
+ * @typedef {object} ShapesSettings
+ * @prop {ShapeObjectSettings} rect
+ * @prop {ShapeObjectSettings} split
+ * @prop {ShapeObjectSettings} indent
+ * @prop {ShapeObjectSettings} blend
+ * @prop {ShapeObjectSettings} distance
+ * @prop {ShapeObjectSettings} opposites
+ * @prop {ShapeObjectSettings} circle
+ * @prop {ShapeObjectSettings} diamond
+ * @prop {ShapeObjectSettings} cross
+ */
 
 /**
-@typedef {object} DrawRatios
-@prop {Setting<number>} lengthMin
-@prop {Setting<number>} lengthMax
-@prop {Setting<number>} heightMin
-@prop {Setting<number>} heightMax
-*/
+ * The grouping of ratio settings.
+ * @typedef {object} DrawRatios
+ * @prop {Setting<number>} lengthMin
+ * @prop {Setting<number>} lengthMax
+ * @prop {Setting<number>} heightMin
+ * @prop {Setting<number>} heightMax
+ */
 
 /**
-@typedef {object} Settings
-@prop {Setting<number>} width
-@prop {Setting<number>} height
-@prop {Setting<number>} minSideSize
-@prop {Setting<boolean>} splitRestrict
-@prop {DrawRatios} ratios
-@prop {ColorSettings} color
-@prop {ShapesSettings} shapes
-*/
+ * The grouping of all settings in the program.
+ * These settings are used to dynamically create the settings menu
+ * and to generate the art.
+ * @typedef {object} Settings
+ * @prop {Setting<number>} width
+ * @prop {Setting<number>} height
+ * @prop {Setting<number>} minSideSize
+ * @prop {Setting<boolean>} splitRestrict
+ * @prop {DrawRatios} ratios
+ * @prop {ColorSettings} color
+ * @prop {ShapesSettings} shapes
+ */
 
 /**
+Generates a new default settings object.
+A function call is used in case an entire new object is needed.
 @returns {Settings}
 */
 function defaultSettings() {
@@ -174,10 +193,34 @@ function defaultSettings() {
       FormType.CheckBox,
     ),
     ratios: {
-      lengthMin: makeSetting(0, "", FormType.Slider, 0, 1),
-      lengthMax: makeSetting(0.15, "", FormType.Slider, 0, 1),
-      heightMin: makeSetting(0, "", FormType.Slider, 0, 1),
-      heightMax: makeSetting(0.15, "", FormType.Slider, 0, 1),
+      lengthMin: makeSetting(
+        0,
+        "The minimum ratio of shape length to canvas length that allows a rect to generate. Prevents many small rects from being drawn.",
+        FormType.Slider,
+        0,
+        1,
+      ),
+      lengthMax: makeSetting(
+        0.15,
+        "The maximum ratio of shape length to canvas length that allows a rect to generate. Prevents many large rects from being drawn.",
+        FormType.Slider,
+        0,
+        1,
+      ),
+      heightMin: makeSetting(
+        0,
+        "The minimum ratio of shape height to canvas height that allows a rect to generate. Prevents many small rects from being drawn.",
+        FormType.Slider,
+        0,
+        1,
+      ),
+      heightMax: makeSetting(
+        0.15,
+        "The minimum ratio of shape height to canvas height that allows a rect to generate. Prevents many large rects from being drawn.",
+        FormType.Slider,
+        0,
+        1,
+      ),
     },
     color: {
       randomColor: makeSetting(
@@ -198,7 +241,7 @@ function defaultSettings() {
         255 * 3,
       ),
       maxDist: makeSetting(
-        150,
+        100,
         "The maximum amount of change when picking a new color.",
         FormType.Slider,
         0,

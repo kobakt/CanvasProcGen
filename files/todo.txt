@@ -9,6 +9,11 @@ SideBar:
 	Reset button: On sidebar, add reset button (input type="reset")
 	Nested names: On sidebar, add <fieldset> and <legend> to have nested option names.
 
+Settings:
+	Remove ShapeSettings: adds unnecessary length and doesn't really make anything simpler. Would allow ShapeObjectSettings to be renamed as well.
+	Setting Methods: Consider adding methods to Setting to replace current optional properties.
+	Better Weights: Currently all shapes return a static weight. Could introduce settings that allow you to pick on a number functions that change the weight contextually, like based on numOfIter.
+
 Split:
 	Memoize splitFactors: Maybe make splitFactors memoized as well or instead of allFactors.
 	Improve SplitContext: Investigate better structure for SplitContext

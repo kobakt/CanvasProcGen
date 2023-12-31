@@ -1,64 +1,51 @@
 "use strict";
-// alert("main.js");
-
 import { defaultSettings } from "./settings.js";
 import { makeHexColor, randomColor } from "./colors.js";
 import { drawRec } from "./draw.js";
 import { addElemsRec } from "./sidebar.js";
 /**
-@typedef {import("./colors.js").Color} Color
 @typedef {import("./settings.js").Settings} Settings
 */
 
-// Drawing functions
-
 /**
-@returns {Color}
- */
-function randStartColor() {
-  return randomColor();
-}
-
-/**
+ * Sets up the canvas to de drawn and then calls drawRec.
  * @param {Settings} settings
+ * @returns {void}
  */
 function draw(settings) {
-  // alert('begin');
   /** @type {HTMLCanvasElement} canvas */
   // @ts-ignore
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
-  const scale = window.devicePixelRatio;
-  // const scale = 4;
 
   if (settings === null || settings === undefined) {
     settings = defaultSettings();
   }
 
-  [canvas.style.width, canvas.style.height] = [
-    settings.width.val / scale + "px",
-    settings.height.val / scale + "px",
-  ];
   [canvas.width, canvas.height] = [
     settings.width.val,
     settings.height.val,
   ];
+  // Fixes high DPI issues on my PC.
+  // Honestly not sure how it works on other
+  // computers or on mobile.
+  const scale = window.devicePixelRatio;
+  [canvas.style.width, canvas.style.height] = [
+    settings.width.val / scale + "px",
+    settings.height.val / scale + "px",
+  ];
 
   let startColor = settings.color.randomColor.val
-    ? randStartColor()
+    ? randomColor()
     : makeHexColor(settings.color.startColor.val);
 
-  /**
-  @type {GlobalContext} global
-  */
+  /** @type {GlobalContext} global */
   let global = {
     callback: drawRec,
     ctx: ctx,
     settings: settings,
   };
-  /**
-  @type {LocalContext} local
-  */
+  /** @type {LocalContext} local */
   let local = {
     length: settings.width.val,
     height: settings.height.val,
@@ -74,40 +61,15 @@ function draw(settings) {
   };
 
   drawRec(global, local);
-  // alert('final');
 }
 
-// Main
+/**
+ * The main function for the program.
+ * Nicely keeps variable names from global scope.
+ */
 function main() {
   const settings = defaultSettings();
   addElemsRec(settings, "settings");
-  // Wallpaper
-  // [settings.width, settings.height] = [1920, 1080];
-  // Wallpaper cut by value testing
-  // const val = 2;
-  // [settings.width, settings.height] = [1920 / val, 1080 / val];
-  // settings.minSideSize = settings.width / 192;
-  // [settings.width, settings.height] = [2048 / val, 1024 / val];
-  // settings.minSideSize = settings.width / 256;
-  // settings.minSideSize = settings.width / 5;
-
-  // Settings tests:
-  // settings.startColor = makeColor(80, 80, 80);
-  // Min
-  // settings.minColorDist = 0;
-  // settings.minColorDist = 50;
-  // settings.minColorDist = 255;
-  // Max
-  // settings.maxColorDist = 0;
-  // settings.maxColorDist = 50;
-  // settings.maxColorDist = 100;
-  // settings.maxColorDist = 255;
-  // settings.maxColorDist = 255 * 3;
-  // settings.splitRestrict = false;
-  // settings.minIterations.minCrossIter = 0;
-  // settings.specialIndentProbability = 1;
-  // settings.specialNestingProbability.cross = 1;
-  // settings.squareWeights.cross = 10;
 
   const btn = document.getElementById("generate");
   btn.addEventListener("click", () => {

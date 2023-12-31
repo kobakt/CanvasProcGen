@@ -1,7 +1,5 @@
 "use strict";
 /**
-@typedef {import("./colors.js").Color} Color
-@typedef {import("./settings.js").Settings} Settings
 @typedef {import("./shapes/shapeObject.js").Shape} Shape
 */
 
@@ -35,9 +33,11 @@ import { diamondObject } from "./shapes/diamond.js";
 shapes.push(diamondObject());
 
 /**
- * @param {Shape[]} shapesToPick
+ * Takes a list of shapes and picks one based on their weights.
  * @param {GlobalContext} global
  * @param {LocalContext} local
+ * @param {Shape[]} shapesToPick
+ * @returns {Shape}
  */
 function pickShape(global, local, shapesToPick) {
   if (shapesToPick.length === 0) {
@@ -59,12 +59,12 @@ function pickShape(global, local, shapesToPick) {
 }
 
 /**
+ * Recursive function which handles drawing a section of the canvas.
  * @param {GlobalContext} global
  * @param {LocalContext} local
+ * @returns {void}
  */
 function drawRec(global, local) {
-  // shapes is list of imported ShapeObjects
-  // checking which can be drawn
   let availableShapes = shapes.filter((x) =>
     x.isAvailable(global, local),
   );
