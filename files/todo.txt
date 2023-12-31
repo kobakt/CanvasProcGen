@@ -15,9 +15,11 @@ Settings:
 Split:
 	Memoize splitFactors: Maybe make splitFactors memoized as well or instead of allFactors.
 	Improve SplitContext: Investigate better structure for SplitContext
+	Add sometype of split with gaps, maybe based on specialShapePlaceable
 
 Indent:		
-	Also possibly incorporate variable indenting amount.
+	Improve variable indenting
+	Add settings for variable indenting
 
 Random:
 	Seeded: Add new seeded random generator

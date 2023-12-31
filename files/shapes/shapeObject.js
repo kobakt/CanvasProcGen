@@ -74,8 +74,13 @@ function drawIndentHelp(specialFunc, doDraw, doIndent) {
       local.color = nextColor(global, local);
     }
     if (doIndent) {
-      const val1 = 2;
-      const val2 = 2;
+      const divisor = 2 * global.settings.minSideSize.val;
+      const maxIndentLength = Math.floor(local.length / divisor - 1);
+      const maxIndentHeight = Math.floor(local.height / divisor - 1);
+      const val1 =
+        2 * Math.ceil((Math.random() * maxIndentLength) / 2);
+      const val2 =
+        2 * Math.ceil((Math.random() * maxIndentHeight) / 2);
       local.length -= global.settings.minSideSize.val * val1;
       local.height -= global.settings.minSideSize.val * val2;
       local.specialShapePlaceable = true;

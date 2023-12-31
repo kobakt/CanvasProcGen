@@ -92,13 +92,7 @@ function areWeDoingLenOrHght(global, local) {
  * @param {number} numOfSplits
  * @param {import("../colors.js").Color} iterColor
  */
-function newSplitLocal(
-  local,
-  byLength,
-  newCenter,
-  numOfSplits,
-  iterColor,
-) {
+function newSplitLocal(local, byLength, newCenter, numOfSplits) {
   const newLocal = structuredClone(local);
   newLocal.specialShapePlaceable = false;
   newLocal.split = {
@@ -113,8 +107,6 @@ function newSplitLocal(
   newLocal.height = byLength
     ? local.height
     : local.height / numOfSplits;
-  newLocal.color = iterColor;
-  newLocal.numOfIter++;
   return newLocal;
 }
 
@@ -131,16 +123,13 @@ function drawSplit(global, local) {
 
   const offsetObj = findOffset(local, byLength, numOfSplits);
 
-  let iterColor = local.color;
   for (let i = 0; i < numOfSplits; i++) {
-    iterColor = nextColor(global, local);
     const newCenter = offsetObj.offsetStart + offsetObj.offset * i;
     const newLocal = newSplitLocal(
       local,
       byLength,
       newCenter,
       numOfSplits,
-      iterColor,
     );
 
     global.callback(global, newLocal);
