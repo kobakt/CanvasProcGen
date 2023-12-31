@@ -17,9 +17,6 @@ Split:
 	Improve SplitContext: Investigate better structure for SplitContext
 
 Indent:		
-	Perhaps allow bool that allows indenting without drawing for
-		for the purpose of special indenting.
-	Try adding to special.
 	Also possibly incorporate variable indenting amount.
 
 Random:
