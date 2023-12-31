@@ -43,5 +43,4 @@ Conext:
 	Change ContextFunction to templated ContextFunction<T>
 
 Special:
-	Prevent rect from appearing when specialShape is placeable.
 	Add recursive call to generalized function.

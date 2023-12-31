@@ -67,6 +67,13 @@ function drawRec(global, local) {
     x.isAvailable(global, local),
   );
   if (availableShapes.length === 0) {
+    if (local.specialShapePlaceable) {
+      // rect is not available and
+      // we don't need to draw a rect in this case,
+      // so don't draw anything.
+      return;
+    }
+    // Need to draw something, so draw a rect.
     availableShapes.push(rectObject());
   }
 
