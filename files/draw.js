@@ -12,14 +12,14 @@ shapes.push(splitObject());
 import { indentObject } from "./shapes/indent.js";
 shapes.push(indentObject());
 
-import { blendObject } from "./shapes/blend.js";
-shapes.push(blendObject());
+import { blend } from "./shapes/recIndent.js";
+shapes.push(blend());
 
-import { distanceObject } from "./shapes/distanceSquare.js";
-shapes.push(distanceObject());
+import { distance } from "./shapes/recIndent.js";
+shapes.push(distance());
 
-import { oppositesObject } from "./shapes/oppositesSquare.js";
-shapes.push(oppositesObject());
+import { opposites } from "./shapes/recIndent.js";
+shapes.push(opposites());
 
 import { circleObject } from "./shapes/circle.js";
 shapes.push(circleObject());
