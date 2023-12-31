@@ -183,7 +183,7 @@ function defaultSettings() {
       4,
       "The smallest a shape can be.",
       FormType.Number,
-      0,
+      1,
       Infinity,
     ),
     splitRestrict: makeSetting(
