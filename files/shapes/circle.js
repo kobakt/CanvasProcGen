@@ -18,32 +18,18 @@ function drawCircleHelp(global, local) {
     2 * Math.PI,
   );
   global.ctx.fill();
-  const newLength = floorEvenOrOdd(
+  return floorEvenOrOdd(
     Math.floor(
       (radius - global.settings.minSideSize.val) * Math.SQRT2,
     ),
     local.length,
   );
-  if (
-    newLength >= global.settings.minSideSize.val &&
-    Math.random() < global.settings.shapes.circle.nestingProb.val
-  ) {
-    const newLocal = structuredClone(local);
-    newLocal.color = nextColor(global, local);
-    newLocal.numOfIter++;
-    newLocal.length = newLength;
-    newLocal.height = newLength;
-    newLocal.specialShapePlaceable = true;
-    global.callback(global, newLocal);
-  }
 }
 
 function circleObject() {
   return makeSpecial(
-    (global) => global.settings.shapes.circle.minIter.val,
-    (global) => global.settings.shapes.circle.weight.val,
+    (global) => global.settings.shapes.circle,
     drawCircleHelp,
-    (global) => global.settings.shapes.circle.nestingIndentProb.val,
   );
 }
 

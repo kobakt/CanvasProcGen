@@ -2,9 +2,10 @@ import { hex, nextColor } from "../colors.js";
 import { floorEvenOrOdd, makeSpecial } from "./special.js";
 
 /**
- * Just draws Cross and nested shapes.
+ * Just draws Cross and returns length for nesting.
  * @param {GlobalContext} global
  * @param {LocalContext} local
+ * @returns {number}
  */
 function drawCrossHelp(global, local) {
   const halfLength = local.length / 2;
@@ -40,32 +41,18 @@ function drawCrossHelp(global, local) {
   global.ctx.lineTo(left, local.centerY - offset);
   global.ctx.fill();
 
-  const newLength = floorEvenOrOdd(
+  return floorEvenOrOdd(
     Math.floor(
       local.length - 2 * offset - 2 * global.settings.minSideSize.val,
     ),
     local.length,
   );
-  if (
-    newLength >= global.settings.minSideSize.val &&
-    Math.random() < global.settings.shapes.cross.nestingProb.val
-  ) {
-    const newLocal = structuredClone(local);
-    newLocal.numOfIter++;
-    newLocal.color = nextColor(global, local);
-    newLocal.length = newLength;
-    newLocal.height = newLength;
-    newLocal.specialShapePlaceable = true;
-    global.callback(global, newLocal);
-  }
 }
 
 function crossObject() {
   return makeSpecial(
-    (global) => global.settings.shapes.cross.minIter.val,
-    (global) => global.settings.shapes.cross.weight.val,
+    (global) => global.settings.shapes.cross,
     drawCrossHelp,
-    (global) => global.settings.shapes.cross.nestingIndentProb.val,
   );
 }
 

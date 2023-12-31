@@ -2,7 +2,7 @@ import { hex, nextColor } from "../colors.js";
 import { floorEvenOrOdd, makeSpecial } from "./special.js";
 
 /**
- * Just draws diamond and nested shapes.
+ * Just draws diamond and returns length for nesting.
  * @param {GlobalContext} global
  * @param {LocalContext} local
  */
@@ -16,34 +16,18 @@ function drawDiamondHelp(global, local) {
   global.ctx.lineTo(local.centerX, local.centerY + offset);
   global.ctx.fill();
 
-  const newLength = floorEvenOrOdd(
+  return floorEvenOrOdd(
     Math.floor(
       local.length / 2 - Math.SQRT2 * global.settings.minSideSize.val,
     ),
     local.length,
   );
-
-  if (
-    newLength >= global.settings.minSideSize.val &&
-    Math.random() < global.settings.shapes.diamond.nestingProb.val
-  ) {
-    const newLocal = structuredClone(local);
-    newLocal.numOfIter++;
-    newLocal.color = nextColor(global, local);
-    newLocal.length = newLength;
-    newLocal.height = newLength;
-    newLocal.specialShapePlaceable = true;
-
-    global.callback(global, newLocal);
-  }
 }
 
 function diamondObject() {
   return makeSpecial(
-    (global) => global.settings.shapes.diamond.minIter.val,
-    (global) => global.settings.shapes.diamond.weight.val,
+    (global) => global.settings.shapes.diamond,
     drawDiamondHelp,
-    (global) => global.settings.shapes.diamond.nestingIndentProb.val,
   );
 }
 
