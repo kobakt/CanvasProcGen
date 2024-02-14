@@ -1,6 +1,8 @@
 # A Generative Art Tool
 This is a generative art tool made using JavaScript and HTML Canvas. Users can create unique and detailed art-pieces with a highly configurable HTML settings menu.
 
+See the page at: https://kobakt.github.io/CanvasProcGen/
+
 ## Dynamic Generation
 Art is dynamically created in-browser with the use of Javascript. The art is generated recursively as the canvas is split up into smaller and smaller pieces. 
 As the canvas is divided into smaller sections, The color of different sections will gradually shift. 
